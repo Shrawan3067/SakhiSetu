@@ -41,3 +41,4 @@ export class ReceiptController {
 }
 
 export const receiptController = new ReceiptController();
+

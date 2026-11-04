@@ -239,3 +239,4 @@ erDiagram
 | `Receipt` | `receiptNumber` | Unique verification and receipt lookup |
 | `Receipt` | `financialYear` | Form 10BD annual statement compilation |
 | `AIReview` | `schemeId, status` | Review desk queue filtering |
+

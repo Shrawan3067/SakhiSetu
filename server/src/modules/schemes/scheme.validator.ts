@@ -58,3 +58,4 @@ export const updateSchemeSchema = z.object({
     status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).optional(),
   }),
 });
+

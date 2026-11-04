@@ -1,119 +1,131 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
-import { ShieldCheck, Heart, Phone, Mail, MapPin, ExternalLink } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const { language } = useLanguage();
 
   return (
-    <footer className="bg-[#103A30] text-[#E5E4DE] pt-14 pb-10 border-t border-[#174C3C]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-[#174C3C]/60">
-          {/* Col 1: Trust Profile */}
-          <div className="space-y-4">
+    <footer className="w-full bg-surface-container-low border-t border-[#E8EAE5] mt-space-xl">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 pt-space-xl pb-space-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-lg mb-space-xl">
+          {/* Brand & Description */}
+          <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[#C77B59] flex items-center justify-center text-white font-bold text-lg font-hindi">
-                स
+              <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-on-primary">
+                <span className="font-bold text-lg font-hindi">स</span>
               </div>
-              <span className="text-2xl font-bold tracking-tight text-white">
+              <span className="font-title-md text-title-md text-primary tracking-tight font-bold">
                 {language === 'HI' ? 'सखीसेतु' : 'SakhiSetu'}
               </span>
             </div>
-            <p className="text-xs text-[#A8BDA8] leading-relaxed">
+            <p className="font-body-md text-body-md text-on-surface-variant max-w-sm">
               {language === 'HI'
-                ? 'मध्य प्रदेश के 9 ज़िलों में महिलाओं की आजीविका, स्वास्थ्य सुरक्षा और सामाजिक स्वावलंबन के लिए समर्पित एक पंजीकृत धर्मार्थ ट्रस्ट (Company A)।'
-                : 'A registered charitable trust (Company A) dedicated to grassroots women livelihood development, maternal healthcare, and social welfare across 9 districts in Madhya Pradesh.'}
+                ? 'मध्य प्रदेश के 9 ज़िलों में महिलाओं की आजीविका, स्वास्थ्य सुरक्षा और सामाजिक स्वावलंबन के लिए समर्पित एक पंजीकृत धर्मार्थ ट्रस्ट।'
+                : "Bridging grassroots women's collectives, rural self-help groups, and official state entitlement programs with verifiable transparency and compassionate community stewardship."}
             </p>
-            <div className="flex items-center gap-2 text-xs text-[#A8BDA8]">
-              <ShieldCheck className="w-4 h-4 text-[#C77B59]" />
-              <span>Trust 80G Reg: CIT(E)/BPL/80G/2021-22/A-1089</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/60">
+              <span className="w-2 h-2 rounded-full bg-primary-container"></span>
+              <span className="font-label-sm text-label-sm text-on-surface">
+                Section 8 Non-Profit | Trust 80G Reg: CIT(E)/BPL/80G/2021-22/A-1089
+              </span>
             </div>
           </div>
 
-          {/* Col 2: Public Navigation */}
-          <div>
-            <h4 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">
-              {language === 'HI' ? 'त्वरित नेविगेशन' : 'Quick Links'}
+          {/* Portals & Tools */}
+          <div className="space-y-3">
+            <h4 className="font-label-caps text-label-caps uppercase tracking-wider text-on-surface-variant font-semibold">
+              {language === 'HI' ? 'पोर्टल और साधन' : 'Portals & Tools'}
             </h4>
-            <ul className="space-y-2.5 text-xs text-[#A8BDA8]">
-              <li>
-                <Link to="/schemes" className="hover:text-white transition-colors">
-                  {language === 'HI' ? 'महिला कल्याण योजनाएं' : 'Women Welfare Schemes'}
+            <ul className="space-y-2.5">
+              <li className="leading-none">
+                <Link
+                  to="/schemes"
+                  className="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors inline-block"
+                >
+                  {language === 'HI' ? 'केंद्रीय एवं राज्य योजनाएं' : 'Central & State Schemes'}
                 </Link>
               </li>
-              <li>
-                <Link to="/eligibility" className="hover:text-white transition-colors">
-                  {language === 'HI' ? 'पात्रता कैलकुलेटर (Eligibility Finder)' : 'Eligibility Calculator'}
+              <li className="leading-none">
+                <Link
+                  to="/eligibility"
+                  className="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors inline-block"
+                >
+                  {language === 'HI' ? 'पात्रता कैलकुलेटर' : 'Eligibility Screener'}
                 </Link>
               </li>
-              <li>
-                <Link to="/campaigns" className="hover:text-white transition-colors">
-                  {language === 'HI' ? 'सक्रिय सामाजिक अभियान' : 'Active Welfare Campaigns'}
+              <li className="leading-none">
+                <Link
+                  to="/campaigns"
+                  className="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors inline-block"
+                >
+                  {language === 'HI' ? 'सामुदायिक अभियान' : 'Active Impact Campaigns'}
                 </Link>
               </li>
-              <li>
-                <Link to="/donate" className="hover:text-white transition-colors">
-                  {language === 'HI' ? 'ऑनलाइन दान करें (80G रसीद)' : 'Make a Donation (80G Receipt)'}
-                </Link>
-              </li>
-              <li>
-                <Link to="/login" className="hover:text-white transition-colors">
-                  {language === 'HI' ? 'प्रशासक / दाता लॉगिन' : 'Admin & Donor Login'}
+              <li className="leading-none">
+                <Link
+                  to="/donate"
+                  className="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors inline-block"
+                >
+                  {language === 'HI' ? 'ऑनलाइन दान (80G रसीद)' : 'Online Donation (80G)'}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: Operational Coverage (9 Districts) */}
-          <div>
-            <h4 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">
-              {language === 'HI' ? 'कार्यक्षेत्र (9 ज़िले)' : 'Operational Districts'}
+          {/* Districts Covered */}
+          <div className="space-y-3">
+            <h4 className="font-label-caps text-label-caps uppercase tracking-wider text-on-surface-variant font-semibold">
+              {language === 'HI' ? 'कार्यक्षेत्र (9 ज़िले)' : '9 Operational Districts'}
             </h4>
-            <div className="grid grid-cols-2 gap-2 text-xs text-[#A8BDA8]">
-              <span>• भोपाल (Bhopal)</span>
-              <span>• सीहोर (Sehore)</span>
-              <span>• रायसेन (Raisen)</span>
-              <span>• राजगढ़ (Rajgarh)</span>
-              <span>• विदिशा (Vidisha)</span>
-              <span>• होशंगाबाद (Hoshangabad)</span>
-              <span>• हरदा (Harda)</span>
-              <span>• बैतूल (Betul)</span>
-              <span>• गुना (Guna)</span>
-            </div>
+            <ul className="space-y-2 font-body-sm text-body-sm text-on-surface-variant">
+              <li>• भोपाल (Bhopal) &amp; सीहोर (Sehore)</li>
+              <li>• रायसेन (Raisen) &amp; राजगढ़ (Rajgarh)</li>
+              <li>• विदिशा (Vidisha) &amp; होशंगाबाद (Hoshangabad)</li>
+              <li>• हरदा (Harda), बैतूल (Betul) &amp; गुना (Guna)</li>
+            </ul>
           </div>
 
-          {/* Col 4: Trust Contact & Helpdesk */}
-          <div className="space-y-3 text-xs text-[#A8BDA8]">
-            <h4 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">
-              {language === 'HI' ? 'संपर्क एवं सहायता' : 'Head Office & Helpdesk'}
+          {/* Tax Exemption Box */}
+          <div className="space-y-3">
+            <h4 className="font-label-caps text-label-caps uppercase tracking-wider text-on-surface-variant font-semibold">
+              {language === 'HI' ? 'कर छूट एवं रसीद' : 'Tax & Contributions'}
             </h4>
-            <div className="flex items-start gap-2.5">
-              <MapPin className="w-4 h-4 text-[#C77B59] shrink-0 mt-0.5" />
-              <span>Plot 14, Arera Hills, Bhopal, Madhya Pradesh - 462011</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <Phone className="w-4 h-4 text-[#C77B59] shrink-0" />
-              <span>हेल्पलाइन: 1800-890-7254 / 0755-2551234</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <Mail className="w-4 h-4 text-[#C77B59] shrink-0" />
-              <span>sahayata@sakhisetu.org</span>
+            <div className="p-4 rounded-xl bg-surface-container-lowest border border-[#E8EAE5] space-y-2">
+              <p className="font-label-sm text-label-sm font-semibold text-primary">
+                {language === 'HI' ? 'धारा 80G छूट' : '80G Tax Exemption'}
+              </p>
+              <p className="font-body-sm text-body-sm text-on-surface-variant">
+                {language === 'HI'
+                  ? 'सभी दान भारतीय आयकर अधिनियम की धारा 80G के तहत 50% कर कटौती के लिए पात्र हैं। तुरंत डिजिटल रसीद जारी।'
+                  : 'All voluntary domestic donations are eligible for a 50% deduction under Section 80G of the Indian Income Tax Act. Instant vector PDF receipts generated.'}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Legal & FCRA Compliance Notice */}
-        <div className="pt-6 space-y-3 text-[11px] text-[#A8BDA8]/80 leading-relaxed">
-          <p>
-            <strong className="text-white">80G & Form 10BD Statutory Compliance:</strong> Donations to SakhiSetu are eligible for 50% deduction under Section 80G(5)(vi) of the Income Tax Act, 1961. Unique donation receipts and certificates are allocated through concurrency-safe atomic sequence numbering. Annual Form 10BD electronic statements are filed electronically with the Income Tax Department.
+        {/* Disclaimer & Bottom Bar */}
+        <div className="pt-6 border-t border-[#E8EAE5] space-y-4">
+          <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed text-xs">
+            {language === 'HI'
+              ? 'आधिकारिक सूचना: सखीसेतु एक गैर-लाभकारी सुविधा मंच है। सभी योजना मानदंड राज्य व केंद्र सरकार के नियमों के अधीन हैं। अंतिम अनुमोदन सरकारी अधिकारियों द्वारा देय है।'
+              : 'Official Statutory Disclaimer: SakhiSetu is an independent grassroots facilitation and social-impact non-profit initiative. SakhiSetu does not represent, execute on behalf of, or replace official statutory portals. Official entitlement sanctions rest solely with designated government authorities.'}
           </p>
-          <p>
-            <strong className="text-white">FCRA Notice:</strong> Foreign currency contributions and international credit cards are strictly outside the scope of this platform and cannot be processed. Only domestic Indian INR contributions are accepted.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-[#174C3C] text-[#A8BDA8]">
-            <span>© {new Date().getFullYear()} SakhiSetu Charitable Trust (Company A, Bhopal). All rights reserved.</span>
-            <span className="text-[10px] mt-2 sm:mt-0 text-[#C77B59]">Demonstration & Code Review Version • Built for Isocode Labs</span>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+            <p className="font-label-sm text-label-sm text-on-surface-variant">
+              © 2024-2025 SakhiSetu Charitable Trust. Built for dignified social equity.
+            </p>
+            <div className="flex items-center gap-6">
+              <Link to="/schemes" className="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors">
+                Schemes
+              </Link>
+              <Link to="/eligibility" className="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors">
+                Eligibility
+              </Link>
+              <Link to="/donate" className="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors">
+                Donate
+              </Link>
+            </div>
           </div>
         </div>
       </div>

@@ -21,3 +21,4 @@ adminSchemeRouter.patch('/:id', validate(updateSchemeSchema), schemeController.u
 adminSchemeRouter.post('/:id/publish', schemeController.publishScheme);
 adminSchemeRouter.post('/:id/archive', schemeController.archiveScheme);
 adminSchemeRouter.delete('/:id', schemeController.deleteScheme);
+

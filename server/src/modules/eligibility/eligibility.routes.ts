@@ -9,3 +9,4 @@ router.post('/match', validate(eligibilityMatchSchema), eligibilityController.ma
 router.post('/request-callback', validate(callbackRequestSchema), eligibilityController.requestCallback);
 
 export default router;
+

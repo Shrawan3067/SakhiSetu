@@ -63,3 +63,4 @@ export function amountInWords(num: number): string {
   result += 'Only';
   return result.replace(/\s+/g, ' ').trim();
 }
+

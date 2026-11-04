@@ -3,19 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { api } from '../../services/api';
 import { Scheme } from '../../types';
-import { SchemeCardSkeleton } from '../../components/common/LoadingSkeleton';
 import { CallbackModal } from '../../components/common/CallbackModal';
-import {
-  Search,
-  Filter,
-  CheckCircle2,
-  Calendar,
-  ExternalLink,
-  ArrowRight,
-  PhoneCall,
-  AlertCircle,
-  X,
-} from 'lucide-react';
 
 const MP_DISTRICTS = [
   'All Districts',
@@ -31,30 +19,26 @@ const MP_DISTRICTS = [
 ];
 
 const CATEGORIES = [
-  'All Categories',
-  'Social Security',
-  'Livelihood & Finance',
-  'Healthcare & Nutrition',
-  'Education & Training',
+  { id: 'All', label: 'All Schemes', count: 38 },
+  { id: 'Social Security', label: 'Financial Assistance', count: 11 },
+  { id: 'Livelihood & Finance', label: 'Livelihood & Self-Help', count: 9 },
+  { id: 'Healthcare & Nutrition', label: 'Healthcare & Maternity', count: 7 },
+  { id: 'Education & Training', label: 'Education & Skilling', count: 6 },
 ];
-
-const NEEDS = ['All Needs', 'Pension', 'Livelihood', 'Health', 'Education'];
 
 export const SchemesPage: React.FC = () => {
   const { language } = useLanguage();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const [schemes, setSchemes] = useState<Scheme[]>([]);
   const [pagination, setPagination] = useState({ total: 0, page: 1, limit: 6, totalPages: 1 });
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // Filter states initialized from URL params
+  // Filter states
   const [search, setSearch] = useState(searchParams.get('search') || '');
-  const [category, setCategory] = useState(searchParams.get('category') || 'All Categories');
+  const [category, setCategory] = useState(searchParams.get('category') || 'All');
   const [district, setDistrict] = useState(searchParams.get('district') || 'All Districts');
-  const [need, setNeed] = useState(searchParams.get('need') || 'All Needs');
-  const [page, setPage] = useState(parseInt(searchParams.get('page') || '1', 10));
+  const [page, setPage] = useState(1);
 
   // Callback Modal state
   const [callbackModal, setCallbackModal] = useState<{
@@ -65,20 +49,18 @@ export const SchemesPage: React.FC = () => {
 
   const fetchSchemes = async () => {
     setIsLoading(true);
-    setError(null);
     try {
       const res = await api.getSchemes({
         search: search.trim() || undefined,
-        category: category !== 'All Categories' ? category : undefined,
+        category: category !== 'All' ? category : undefined,
         district: district !== 'All Districts' ? district : undefined,
-        need: need !== 'All Needs' ? need : undefined,
         page,
         limit: 6,
       });
       setSchemes(res.schemes);
       setPagination(res.pagination);
     } catch (err: any) {
-      setError(err.message || 'Failed to load schemes. Please try again.');
+      console.error('Failed to load schemes', err);
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +68,7 @@ export const SchemesPage: React.FC = () => {
 
   useEffect(() => {
     fetchSchemes();
-  }, [category, district, need, page]);
+  }, [category, district, page]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,91 +78,95 @@ export const SchemesPage: React.FC = () => {
 
   const clearAllFilters = () => {
     setSearch('');
-    setCategory('All Categories');
+    setCategory('All');
     setDistrict('All Districts');
-    setNeed('All Needs');
     setPage(1);
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      {/* Page Header */}
-      <div className="space-y-3">
-        <div className="inline-flex items-center gap-2 text-xs font-bold text-[#174C3C] bg-[#174C3C]/10 px-3 py-1 rounded-full">
-          <CheckCircle2 className="w-3.5 h-3.5" />
-          <span>{language === 'HI' ? 'सत्यापित शासकीय योजनाएं' : 'Verified State Welfare Directory'}</span>
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#103A30]">
-          {language === 'HI' ? 'महिला कल्याण योजनाएं' : 'Women Welfare Schemes'}
-        </h1>
-        <p className="text-sm text-[#727B74] max-w-3xl">
-          {language === 'HI'
-            ? 'मध्य प्रदेश सरकार एवं केंद्र सरकार द्वारा संचालित महिला सशक्तिकरण, पेंशन, आजीविका और स्वास्थ्य योजनाओं की सत्यापित जानकारी।'
-            : 'Explore verified government welfare schemes across livelihood, social security, maternal health, and education across 9 Madhya Pradesh districts.'}
-        </p>
-      </div>
+    <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 space-y-8 animate-fadeIn">
+      {/* Top Breadcrumb & Header */}
+      <section className="space-y-4">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm">
+          <Link to="/" className="hover:text-primary transition-colors flex items-center gap-1">
+            <span className="material-symbols-outlined text-[16px]">home</span>
+            <span>Home</span>
+          </Link>
+          <span className="text-outline-variant font-label-sm">/</span>
+          <span className="text-primary font-semibold">Government Schemes Directory</span>
+        </nav>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-white rounded-card border border-[#E5E4DE] p-5 shadow-xs space-y-4">
-        {/* Search input */}
-        <form onSubmit={handleSearchSubmit} className="flex gap-2">
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 text-[#727B74] absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={
-                language === 'HI'
-                  ? 'योजना का नाम, कोड (उदा. SCH-014) या कीवर्ड खोजें...'
-                  : 'Search by title, scheme code (e.g. SCH-014), or keyword...'
-              }
-              className="w-full pl-10 pr-4 py-2.5 text-sm border border-[#E5E4DE] rounded-btn focus:outline-hidden focus:border-[#174C3C] focus:ring-1 focus:ring-[#174C3C]"
-            />
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="space-y-2 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+              <span>Verified with MP e-District &amp; Jan Seva Kendra Portals</span>
+            </div>
+            <h1 className="font-headline-lg text-headline-lg text-primary tracking-tight font-bold">
+              Government Schemes &amp; Entitlements Directory
+            </h1>
+            <p className="font-body-lg text-body-lg text-on-surface-variant">
+              Discover, filter, and apply for verified central and state-sponsored welfare initiatives designed to support women, families, and self-help groups across Madhya Pradesh.
+            </p>
           </div>
+        </div>
+      </section>
+
+      {/* Search Bar & Category Filter Strip */}
+      <section className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-[#E8EAE5] space-y-6">
+        {/* Search Bar */}
+        <form onSubmit={handleSearchSubmit} className="relative w-full">
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[22px]">
+            search
+          </span>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by scheme name, keywords (e.g. 'maternity', 'ration', 'loan'), or nodal department..."
+            className="w-full pl-12 pr-28 py-3.5 bg-surface-container-low rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline border border-[#E8EAE5] focus:outline-hidden focus:bg-surface-container-lowest transition-all"
+          />
           <button
             type="submit"
-            className="px-5 py-2.5 bg-[#174C3C] hover:bg-[#103A30] text-white text-xs font-semibold rounded-btn transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-primary text-on-primary font-label-sm text-label-sm rounded-lg hover:bg-primary-container transition-colors"
           >
-            {language === 'HI' ? 'खोजें' : 'Search'}
+            Search
           </button>
         </form>
 
-        {/* Dropdowns row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-[#FAF9F5]">
-          {/* Category */}
-          <div>
-            <label className="block text-[11px] font-semibold text-[#727B74] mb-1">
-              {language === 'HI' ? 'श्रेणी (Category)' : 'Category'}
-            </label>
-            <select
-              value={category}
-              onChange={(e) => {
-                setCategory(e.target.value);
-                setPage(1);
-              }}
-              className="w-full px-3 py-2 text-xs border border-[#E5E4DE] rounded-btn bg-[#FAF9F5] focus:outline-hidden focus:border-[#174C3C]"
-            >
-              {CATEGORIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Category Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          {CATEGORIES.map((cat) => {
+            const isSelected = category === cat.id;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => {
+                  setCategory(cat.id);
+                  setPage(1);
+                }}
+                className={`px-4 py-2 rounded-xl font-label-md text-label-md whitespace-nowrap transition-all flex items-center gap-2 ${
+                  isSelected
+                    ? 'bg-primary text-on-primary shadow-sm font-semibold'
+                    : 'bg-surface-container-low hover:bg-surface-container text-on-surface-variant'
+                }`}
+              >
+                <span>{cat.label}</span>
+              </button>
+            );
+          })}
+        </div>
 
-          {/* District */}
-          <div>
-            <label className="block text-[11px] font-semibold text-[#727B74] mb-1">
-              {language === 'HI' ? 'ज़िला (District)' : 'District'}
-            </label>
+        {/* Secondary Filters */}
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-[#E8EAE5]">
+          <div className="flex flex-wrap items-center gap-3">
             <select
               value={district}
               onChange={(e) => {
                 setDistrict(e.target.value);
                 setPage(1);
               }}
-              className="w-full px-3 py-2 text-xs border border-[#E5E4DE] rounded-btn bg-[#FAF9F5] focus:outline-hidden focus:border-[#174C3C]"
+              className="px-3.5 py-2 bg-surface-container-low text-on-surface rounded-xl font-label-md text-label-md border border-[#E8EAE5] focus:outline-hidden cursor-pointer"
             >
               {MP_DISTRICTS.map((d) => (
                 <option key={d} value={d}>
@@ -190,147 +176,110 @@ export const SchemesPage: React.FC = () => {
             </select>
           </div>
 
-          {/* Need */}
-          <div>
-            <label className="block text-[11px] font-semibold text-[#727B74] mb-1">
-              {language === 'HI' ? 'ज़रूरत (Need Area)' : 'Need Area'}
-            </label>
-            <select
-              value={need}
-              onChange={(e) => {
-                setNeed(e.target.value);
-                setPage(1);
-              }}
-              className="w-full px-3 py-2 text-xs border border-[#E5E4DE] rounded-btn bg-[#FAF9F5] focus:outline-hidden focus:border-[#174C3C]"
-            >
-              {NEEDS.map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Clear filters badge if applied */}
-        {(search || category !== 'All Categories' || district !== 'All Districts' || need !== 'All Needs') && (
-          <div className="flex items-center gap-2 pt-2 text-xs text-[#727B74]">
-            <span>Active filters:</span>
+          <div className="flex items-center gap-2">
             <button
               onClick={clearAllFilters}
-              className="inline-flex items-center gap-1 text-[#C77B59] hover:underline font-semibold"
+              className="text-secondary font-label-md text-label-md hover:underline cursor-pointer"
             >
-              <X className="w-3.5 h-3.5" />
-              <span>Clear all filters</span>
+              Clear All Filters
             </button>
           </div>
-        )}
+        </div>
+      </section>
+
+      {/* Discovery Prompt Card */}
+      <div className="w-full bg-gradient-to-r from-primary-container via-tertiary-container to-primary-container p-6 rounded-2xl text-on-primary flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-md relative overflow-hidden">
+        <div className="space-y-1 z-10">
+          <div className="inline-flex items-center gap-2 font-label-caps text-label-caps text-primary-fixed uppercase tracking-wider font-semibold">
+            <span className="material-symbols-outlined text-[16px]">bolt</span>
+            Instant Heuristic Screener
+          </div>
+          <h3 className="font-headline-sm text-headline-sm font-semibold tracking-tight text-on-primary">
+            Don't know which documents you have? Run the 2-minute Eligibility Screener
+          </h3>
+          <p className="font-body-md text-body-md text-on-primary-container max-w-2xl">
+            Answer 6 simple anonymous questions regarding your age, district, marital status, and household income to unlock matching scheme checklists.
+          </p>
+        </div>
+        <Link
+          to="/eligibility"
+          className="z-10 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-secondary text-on-secondary font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-all shrink-0 shadow-sm"
+        >
+          <span>Start Screener</span>
+          <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </Link>
       </div>
 
-      {/* Error state */}
-      {error && (
-        <div className="p-4 rounded-card bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 shrink-0" />
-          <span>{error}</span>
-          <button onClick={fetchSchemes} className="ml-auto underline font-semibold text-xs">
-            Retry
-          </button>
+      {/* Schemes Grid */}
+      <section className="space-y-6">
+        <div className="flex items-center justify-between">
+          <span className="font-headline-sm text-headline-sm text-on-surface font-semibold">
+            Showing {schemes.length} of {pagination.total} Schemes
+          </span>
         </div>
-      )}
 
-      {/* Scheme Cards Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <SchemeCardSkeleton />
-          <SchemeCardSkeleton />
-          <SchemeCardSkeleton />
-        </div>
-      ) : schemes.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-card border border-[#E5E4DE] p-8 space-y-4">
-          <div className="w-12 h-12 rounded-full bg-[#FAF9F5] text-[#727B74] flex items-center justify-center mx-auto">
-            <Search className="w-6 h-6" />
-          </div>
-          <h3 className="text-base font-bold text-[#202923]">
-            {language === 'HI' ? 'कोई योजना नहीं मिली' : 'No schemes match your criteria'}
-          </h3>
-          <p className="text-xs text-[#727B74] max-w-md mx-auto">
-            {language === 'HI'
-              ? 'कृपया अपने खोज शब्द या फ़िल्टर बदलकर पुनः प्रयास करें अथवा हेल्पलाइन से सहायता लें।'
-              : 'Try clearing some filters or searching with a different keyword.'}
-          </p>
-          <button
-            onClick={clearAllFilters}
-            className="px-4 py-2 bg-[#174C3C] text-white text-xs font-semibold rounded-btn"
-          >
-            {language === 'HI' ? 'फ़िल्टर हटाएं' : 'Reset Filters'}
-          </button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {schemes.map((scheme) => (
-            <div
-              key={scheme.id}
-              className="bg-white rounded-card border border-[#E5E4DE] p-6 shadow-xs hover:shadow-soft transition-all duration-200 flex flex-col justify-between group"
+        {isLoading ? (
+          <div className="p-12 text-center text-on-surface-variant">Loading government schemes...</div>
+        ) : schemes.length === 0 ? (
+          <div className="bg-surface-container-lowest rounded-2xl p-12 text-center space-y-3 border border-[#E8EAE5]">
+            <span className="material-symbols-outlined text-4xl text-outline">search_off</span>
+            <h3 className="font-title-md text-primary font-bold">No schemes match your filter</h3>
+            <p className="font-body-sm text-on-surface-variant">Try selecting another district or category.</p>
+            <button
+              onClick={clearAllFilters}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-on-primary font-label-sm"
             >
-              <div>
-                {/* Badges */}
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="text-[10px] font-bold text-[#174C3C] bg-[#174C3C]/10 px-2 py-0.5 rounded-sm">
-                    {scheme.schemeCode}
-                  </span>
-                  <span className="text-[10px] font-medium text-[#727B74] bg-[#FAF9F5] px-2 py-0.5 rounded-sm border border-[#E5E4DE]">
-                    {scheme.category}
-                  </span>
+              Reset Filters
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {schemes.map((scheme) => (
+              <article
+                key={scheme.id}
+                className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-[#E8EAE5]"
+              >
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <span className="px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm font-semibold">
+                      {scheme.schemeCode}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-primary font-label-sm text-xs font-semibold">
+                      <span className="material-symbols-outlined text-[14px]">verified</span> Verified MP
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="font-title-md text-title-md font-bold text-primary mb-1">
+                      {scheme.name}
+                    </h3>
+                    {scheme.nameHi && (
+                      <p className="font-label-md text-secondary font-medium font-hindi mb-2">
+                        {scheme.nameHi}
+                      </p>
+                    )}
+                    <div className="p-3.5 rounded-xl bg-surface-container-low my-3 border border-[#E8EAE5]">
+                      <p className="font-label-caps text-label-caps text-on-surface-variant uppercase font-medium">
+                        Sanctioned Benefit
+                      </p>
+                      <p className="font-headline-sm text-headline-sm font-bold text-primary">
+                        {scheme.benefit.split('(')[0] || 'Direct Allowance'}
+                      </p>
+                    </div>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-3">
+                      {scheme.description}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Title */}
-                <h3 className="text-base font-bold text-[#202923] mb-2 leading-snug group-hover:text-[#174C3C] transition-colors">
-                  {language === 'HI' && scheme.nameHi ? scheme.nameHi : scheme.name}
-                </h3>
-
-                {/* Description */}
-                <p className="text-xs text-[#727B74] line-clamp-2 leading-relaxed mb-4">
-                  {language === 'HI' && scheme.descriptionHi ? scheme.descriptionHi : scheme.description}
-                </p>
-
-                {/* Benefit Box */}
-                <div className="p-3 bg-[#FAF9F5] rounded-lg border border-[#E5E4DE]/60 mb-4">
-                  <span className="text-[9px] font-bold text-[#174C3C] uppercase tracking-wider block">
-                    {language === 'HI' ? 'शासकीय लाभ' : 'Official Benefit'}
-                  </span>
-                  <span className="text-xs font-bold text-[#202923]">
-                    {language === 'HI' && scheme.benefitHi ? scheme.benefitHi : scheme.benefit}
-                  </span>
-                </div>
-
-                {/* Who can apply summary */}
-                {scheme.eligibilityRules?.notes && (
-                  <p className="text-[11px] text-[#727B74] italic mb-4 line-clamp-1">
-                    "{scheme.eligibilityRules.notes}"
-                  </p>
-                )}
-              </div>
-
-              {/* Card Footer Actions */}
-              <div className="pt-4 border-t border-[#FAF9F5] space-y-3">
-                <div className="flex items-center justify-between text-[10px] text-[#727B74]">
-                  <span className="inline-flex items-center gap-1 text-[#174C3C] font-semibold">
-                    <CheckCircle2 className="w-3 h-3" />
-                    <span>Official Portal</span>
-                  </span>
-                  <span>Verified: {new Date(scheme.lastCheckedAt).toLocaleDateString('en-IN')}</span>
-                </div>
-
-                <div className="flex gap-2">
+                <div className="pt-6 mt-4 border-t border-[#E8EAE5] flex items-center justify-between gap-2">
                   <Link
                     to={`/schemes/${scheme.slug}`}
-                    className="flex-1 text-center py-2 bg-[#174C3C] hover:bg-[#103A30] text-white text-xs font-semibold rounded-btn transition-colors"
+                    className="inline-flex items-center justify-center flex-1 py-2.5 rounded-xl bg-surface-container-high text-primary font-label-md text-label-md font-semibold hover:bg-primary-fixed hover:text-on-primary-fixed transition-colors"
                   >
-                    {language === 'HI' ? 'पूर्ण विवरण देखें' : 'View Details'}
+                    View Guidelines →
                   </Link>
-
                   <button
-                    type="button"
                     onClick={() =>
                       setCallbackModal({
                         isOpen: true,
@@ -338,46 +287,42 @@ export const SchemesPage: React.FC = () => {
                         schemeName: scheme.name,
                       })
                     }
-                    title="Request callback"
-                    className="p-2 border border-[#E5E4DE] text-[#174C3C] hover:bg-[#FAF9F5] rounded-btn transition-colors"
+                    title="Get Help from Sakhi Sahayika"
+                    className="p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container text-secondary transition-colors"
                   >
-                    <PhoneCall className="w-3.5 h-3.5" />
+                    <span className="material-symbols-outlined text-[20px]">support_agent</span>
                   </button>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+              </article>
+            ))}
+          </div>
+        )}
 
-      {/* Pagination Controls */}
-      {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between pt-6 border-t border-[#E5E4DE]">
-          <p className="text-xs text-[#727B74]">
-            Showing page <span className="font-bold text-[#202923]">{pagination.page}</span> of{' '}
-            <span className="font-bold text-[#202923]">{pagination.totalPages}</span> ({pagination.total} schemes total)
-          </p>
-
-          <div className="flex items-center gap-2">
+        {/* Pagination */}
+        {pagination.totalPages > 1 && (
+          <div className="flex items-center justify-center gap-3 pt-6">
             <button
-              onClick={() => setPage(Math.max(1, page - 1))}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1.5 border border-[#E5E4DE] text-xs font-semibold rounded-btn disabled:opacity-40 hover:bg-white"
+              className="px-4 py-2 rounded-xl bg-surface-container text-primary font-label-sm font-semibold disabled:opacity-40"
             >
               Previous
             </button>
+            <span className="font-label-sm text-label-sm text-on-surface-variant">
+              Page {page} of {pagination.totalPages}
+            </span>
             <button
-              onClick={() => setPage(Math.min(pagination.totalPages, page + 1))}
+              onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
               disabled={page === pagination.totalPages}
-              className="px-3 py-1.5 border border-[#E5E4DE] text-xs font-semibold rounded-btn disabled:opacity-40 hover:bg-white"
+              className="px-4 py-2 rounded-xl bg-surface-container text-primary font-label-sm font-semibold disabled:opacity-40"
             >
               Next
             </button>
           </div>
-        </div>
-      )}
+        )}
+      </section>
 
-      {/* Free Callback Modal */}
+      {/* Callback Modal */}
       <CallbackModal
         isOpen={callbackModal.isOpen}
         onClose={() => setCallbackModal({ isOpen: false })}

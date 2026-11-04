@@ -17,3 +17,4 @@ donationRouter.get('/:id', optionalAuthenticate, donationController.getDonationB
 // Admin routes
 adminDonationRouter.use(authenticate, requireRole(Role.ADMIN));
 adminDonationRouter.get('/', donationController.listAllAdmin);
+

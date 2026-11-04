@@ -8,3 +8,4 @@ router.get('/:id', optionalAuthenticate, receiptController.getById);
 router.get('/:id/download', optionalAuthenticate, receiptController.downloadPdf);
 
 export default router;
+

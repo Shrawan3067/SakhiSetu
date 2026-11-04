@@ -18,3 +18,4 @@ adminCampaignRouter.use(authenticate, requireRole(Role.ADMIN));
 adminCampaignRouter.get('/', campaignController.listAdmin);
 adminCampaignRouter.post('/', validate(createCampaignSchema), campaignController.create);
 adminCampaignRouter.patch('/:id', validate(updateCampaignSchema), campaignController.update);
+

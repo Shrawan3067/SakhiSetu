@@ -3,145 +3,142 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { Heart, Menu, X, User as UserIcon, ShieldCheck, LogOut, FileText, CheckCircle2 } from 'lucide-react';
+import { Menu, X, User as UserIcon, ShieldCheck, LogOut } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
-  const { user, isAdmin, isDonor, logout } = useAuth();
+  const { user, isAdmin, logout } = useAuth();
   const { t, language } = useLanguage();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { href: '/schemes', label: t('nav.schemes') },
-    { href: '/eligibility', label: t('nav.eligibility') },
-    { href: '/campaigns', label: t('nav.campaigns') },
+    { href: '/', label: language === 'HI' ? 'होम' : 'Home' },
+    { href: '/schemes', label: language === 'HI' ? 'योजनाएं खोजें' : 'Explore Schemes' },
+    { href: '/eligibility', label: language === 'HI' ? 'पात्रता जांचें' : 'Find My Scheme' },
+    { href: '/campaigns', label: language === 'HI' ? 'अभियान' : 'Our Impact' },
+    { href: '/donate', label: language === 'HI' ? 'सहयोग करें' : 'Donate' },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    if (path === '/' && location.pathname === '/') return true;
+    if (path !== '/' && location.pathname.startsWith(path)) return true;
+    return false;
+  };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FFFFFF]/95 backdrop-blur-md border-b border-[#E5E4DE] shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 sm:h-20">
-          {/* Logo & Brand */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-[#174C3C] to-[#103A30] flex items-center justify-center text-white shadow-soft group-hover:scale-105 transition-transform duration-200">
-              <span className="font-bold text-lg tracking-wider font-hindi">स</span>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAF9F5]/95 backdrop-blur-md border-b border-[#E8EAE5]">
+      <div className="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
+        {/* Left: Brand + Nav */}
+        <div className="flex items-center gap-6 lg:gap-10">
+          <Link to="/" className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-xs">
+              <span className="font-bold text-lg font-hindi">स</span>
             </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xl sm:text-2xl font-bold tracking-tight text-[#174C3C]">
-                  {language === 'HI' ? 'सखीसेतु' : 'SakhiSetu'}
-                </span>
-                <span className="inline-block w-2 h-2 rounded-full bg-[#C77B59]"></span>
-              </div>
-              <p className="text-[10px] text-[#727B74] font-medium hidden sm:block">
-                {language === 'HI' ? 'महिला सशक्तिकरण ट्रस्ट • भोपाल' : 'Women Welfare Trust • Bhopal'}
-              </p>
-            </div>
+            <span className="font-title-md text-title-md text-primary tracking-tight font-bold">
+              {language === 'HI' ? 'सखीसेतु' : 'SakhiSetu'}
+            </span>
           </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`text-sm font-semibold transition-colors duration-200 ${
-                  isActive(link.href)
-                    ? 'text-[#174C3C] border-b-2 border-[#174C3C] pb-0.5'
-                    : 'text-[#202923] hover:text-[#174C3C]'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav className="hidden xl:flex items-center gap-1">
+            {navLinks.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className={`transition-colors font-label-md text-label-md px-3 py-1.5 rounded-xl ${
+                    active
+                      ? 'bg-primary-container text-on-primary-container font-semibold'
+                      : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
+        </div>
 
-          {/* Right Action Items */}
-          <div className="hidden md:flex items-center gap-4">
-            <LanguageSwitcher />
+        {/* Right: Lang Switcher + Auth + Donate CTA */}
+        <div className="flex items-center gap-3 lg:gap-4">
+          <LanguageSwitcher />
 
+          {user ? (
+            <div className="hidden sm:flex items-center gap-2">
+              {isAdmin ? (
+                <Link
+                  to="/admin"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md hover:opacity-90 transition-colors"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Admin</span>
+                </Link>
+              ) : (
+                <Link
+                  to="/donor/dashboard"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-container-high text-on-surface font-label-md text-label-md hover:bg-surface-container-highest transition-colors"
+                >
+                  <UserIcon className="w-4 h-4" />
+                  <span>Dashboard</span>
+                </Link>
+              )}
+              <button
+                type="button"
+                onClick={logout}
+                title="Log out"
+                className="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container-low rounded-xl transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
             <Link
-              to="/donate"
-              className="inline-flex items-center gap-2 bg-[#C77B59] hover:bg-[#B06544] text-white px-4 py-2 rounded-btn text-sm font-semibold shadow-soft hover:shadow-elevated transition-all duration-200"
+              to="/login"
+              className="hidden sm:inline-flex items-center justify-center font-label-md text-label-md text-on-surface px-4 py-2 rounded-xl border border-outline-variant hover:bg-surface-container-low transition-colors"
             >
-              <Heart className="w-4 h-4 fill-white" />
-              <span>{t('nav.donate')}</span>
+              {language === 'HI' ? 'लॉग इन' : 'Log in'}
             </Link>
+          )}
 
-            {user ? (
-              <div className="flex items-center gap-2 border-l border-[#E5E4DE] pl-4">
-                {isAdmin ? (
-                  <Link
-                    to="/admin"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-btn bg-[#174C3C] text-white text-xs font-semibold hover:bg-[#103A30] transition-colors"
-                  >
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>{t('nav.adminDashboard')}</span>
-                  </Link>
-                ) : (
-                  <Link
-                    to="/donor/dashboard"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-btn bg-[#A8BDA8]/25 text-[#103A30] text-xs font-semibold hover:bg-[#A8BDA8]/40 transition-colors"
-                  >
-                    <UserIcon className="w-3.5 h-3.5" />
-                    <span>{t('nav.dashboard')}</span>
-                  </Link>
-                )}
-                <button
-                  type="button"
-                  onClick={logout}
-                  title="Log out"
-                  className="p-1.5 text-[#727B74] hover:text-[#C77B59] hover:bg-[#FAF9F5] rounded-btn transition-colors"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 border-l border-[#E5E4DE] pl-4">
-                <Link
-                  to="/login"
-                  className="text-xs font-semibold text-[#174C3C] hover:text-[#103A30] px-3 py-1.5 rounded-btn hover:bg-[#FAF9F5] transition-colors"
-                >
-                  {t('nav.login')}
-                </Link>
-                <Link
-                  to="/register"
-                  className="text-xs font-semibold border border-[#174C3C] text-[#174C3C] hover:bg-[#174C3C] hover:text-white px-3 py-1.5 rounded-btn transition-all duration-200"
-                >
-                  {t('nav.register')}
-                </Link>
-              </div>
-            )}
-          </div>
+          <Link
+            to="/donate"
+            className="inline-flex items-center justify-center font-label-md text-label-md bg-secondary text-on-secondary px-4 py-2 rounded-xl hover:bg-[#B56C4A] shadow-[0_1px_3px_rgba(32,41,35,0.04)] transition-colors"
+          >
+            {language === 'HI' ? 'दान करें' : 'Donate Now'}
+          </Link>
 
-          {/* Mobile Menu Button */}
-          <div className="flex items-center gap-2 md:hidden">
-            <LanguageSwitcher />
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-[#202923] hover:text-[#174C3C] rounded-lg focus:outline-hidden"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
+          {/* User Icon Circle */}
+          {user && (
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary">
+              <span className="material-symbols-outlined text-[18px]">person</span>
+            </div>
+          )}
+
+          {/* Mobile hamburger */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="xl:hidden p-2 text-on-surface hover:text-primary rounded-xl focus:outline-hidden"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-[#E5E4DE] bg-white px-4 pt-3 pb-6 space-y-3 animate-fadeIn">
-          <div className="flex flex-col space-y-2">
+        <div className="xl:hidden border-t border-[#E8EAE5] bg-[#FAF9F5] px-6 py-4 space-y-3 animate-fadeIn">
+          <div className="flex flex-col space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`px-3 py-2 rounded-lg text-sm font-semibold ${
-                  isActive(link.href) ? 'bg-[#174C3C]/10 text-[#174C3C]' : 'text-[#202923]'
+                className={`px-3 py-2 rounded-xl font-label-md text-label-md ${
+                  isActive(link.href)
+                    ? 'bg-primary-container text-on-primary-container font-semibold'
+                    : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
                 {link.label}
@@ -149,63 +146,42 @@ export const Navbar: React.FC = () => {
             ))}
           </div>
 
-          <div className="pt-2 border-t border-[#E5E4DE] space-y-2">
-            <Link
-              to="/donate"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full flex items-center justify-center gap-2 bg-[#C77B59] text-white py-2.5 rounded-btn text-sm font-semibold"
-            >
-              <Heart className="w-4 h-4 fill-white" />
-              <span>{t('nav.donate')}</span>
-            </Link>
-
+          <div className="pt-3 border-t border-[#E8EAE5] flex flex-col gap-2">
             {user ? (
-              <div className="space-y-1">
-                {isAdmin ? (
-                  <Link
-                    to="/admin"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="w-full flex items-center justify-center gap-2 bg-[#174C3C] text-white py-2 rounded-btn text-sm font-semibold"
-                  >
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>{t('nav.adminDashboard')}</span>
-                  </Link>
-                ) : (
-                  <Link
-                    to="/donor/dashboard"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="w-full flex items-center justify-center gap-2 bg-[#A8BDA8]/25 text-[#103A30] py-2 rounded-btn text-sm font-semibold"
-                  >
-                    <UserIcon className="w-4 h-4" />
-                    <span>{t('nav.dashboard')}</span>
-                  </Link>
-                )}
+              <div className="flex items-center justify-between">
+                <Link
+                  to={isAdmin ? '/admin' : '/donor/dashboard'}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="font-label-md text-label-md text-primary font-semibold"
+                >
+                  {isAdmin ? 'Admin Console' : 'Donor Dashboard'}
+                </Link>
                 <button
                   type="button"
                   onClick={() => {
                     logout();
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full text-center py-2 text-xs text-[#727B74] font-medium"
+                  className="font-label-sm text-label-sm text-error"
                 >
-                  {t('nav.logout')}
+                  Log out
                 </button>
               </div>
             ) : (
-              <div className="flex gap-2 pt-1">
+              <div className="flex gap-2">
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 text-center py-2 text-sm font-semibold border border-[#174C3C] text-[#174C3C] rounded-btn"
+                  className="flex-1 text-center py-2 font-label-md text-label-md border border-outline-variant rounded-xl"
                 >
-                  {t('nav.login')}
+                  Log in
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 text-center py-2 text-sm font-semibold bg-[#174C3C] text-white rounded-btn"
+                  className="flex-1 text-center py-2 font-label-md text-label-md bg-primary text-on-primary rounded-xl"
                 >
-                  {t('nav.register')}
+                  Register
                 </Link>
               </div>
             )}

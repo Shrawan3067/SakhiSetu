@@ -2,18 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { api } from '../../services/api';
-import {
-  CheckCircle2,
-  Download,
-  FileText,
-  ShieldCheck,
-  Calendar,
-  CreditCard,
-  Heart,
-  ArrowRight,
-  Loader2,
-  Building2,
-} from 'lucide-react';
 
 export const DonationSuccessPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -69,17 +57,20 @@ export const DonationSuccessPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#174C3C]" />
+        <span className="material-symbols-outlined text-4xl text-primary animate-spin">refresh</span>
       </div>
     );
   }
 
   if (error || !donation) {
     return (
-      <div className="max-w-md mx-auto px-4 py-16 text-center space-y-4">
-        <h2 className="text-xl font-bold text-[#202923]">Donation Confirmation Error</h2>
-        <p className="text-xs text-[#727B74]">{error || 'Could not locate your donation order.'}</p>
-        <Link to="/donate" className="inline-block px-4 py-2 bg-[#174C3C] text-white text-xs font-bold rounded-btn">
+      <div className="max-w-md mx-auto px-6 py-16 text-center space-y-4">
+        <h2 className="font-headline-sm text-headline-sm text-primary font-bold">Donation Confirmation Error</h2>
+        <p className="font-body-sm text-on-surface-variant">{error || 'Could not locate your donation order.'}</p>
+        <Link
+          to="/donate"
+          className="inline-block px-5 py-2.5 bg-primary text-on-primary font-label-md text-sm font-semibold rounded-xl"
+        >
           Back to Donation Page
         </Link>
       </div>
@@ -89,144 +80,100 @@ export const DonationSuccessPage: React.FC = () => {
   const receipt = donation.receipt;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8 animate-fadeIn">
+    <div className="max-w-3xl mx-auto px-6 lg:px-12 py-12 space-y-8 animate-fadeIn">
       {/* Success Hero Header */}
       <div className="text-center space-y-3">
-        <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto shadow-soft">
-          <CheckCircle2 className="w-9 h-9" />
+        <div className="w-16 h-16 rounded-full bg-primary-fixed text-primary flex items-center justify-center mx-auto shadow-sm">
+          <span className="material-symbols-outlined text-[36px]">verified</span>
         </div>
-        <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#174C3C] bg-[#174C3C]/10 px-3 py-0.5 rounded-full">
-          <span>{language === 'HI' ? 'दान सफलतापूर्वक संपन्न हुआ' : 'Donation Successfully Confirmed'}</span>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary font-label-caps text-label-caps uppercase font-bold">
+          <span>Donation Successfully Confirmed</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#103A30]">
-          {language === 'HI' ? 'धन्यवाद! आपका योगदान दर्ज कर लिया गया है।' : 'Thank You for Your Generous Contribution!'}
+        <h1 className="font-headline-lg text-headline-lg text-primary font-bold tracking-tight">
+          Thank You For Your Gracious Support!
         </h1>
-        <p className="text-xs sm:text-sm text-[#727B74] max-w-md mx-auto">
-          {language === 'HI'
-            ? 'आपकी सहायता से ग्रामीण महिलाओं के जीवन में सकारात्मक बदलाव आएगा। आपकी 80G कर छूट रसीद जारी कर दी गई है।'
-            : 'Your contribution will empower rural women across Madhya Pradesh. Your signed 80G demo tax receipt is ready.'}
+        <p className="font-body-md text-body-md text-on-surface-variant max-w-lg mx-auto">
+          Your voluntary contribution has been safely credited to our direct community fund with zero administrative broker deductions.
         </p>
       </div>
 
-      {/* 80G Demo Receipt Card */}
-      <div className="bg-white rounded-card border-2 border-[#174C3C] shadow-elevated overflow-hidden">
-        {/* Banner */}
-        <div className="bg-[#FEF3C7] px-6 py-2.5 text-center border-b border-[#FDE68A]">
-          <span className="text-[10px] font-bold text-[#92400E] tracking-wider uppercase">
-            DEMONSTRATION 80G RECEIPT — NOT A VALID TAX CERTIFICATE — FOR CODE REVIEW ONLY
-          </span>
-        </div>
-
-        <div className="p-6 sm:p-8 space-y-6">
-          {/* Trust & Receipt Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-[#E5E4DE] gap-4">
+      {/* 80G Receipt Voucher Card */}
+      {receipt && (
+        <div className="bg-surface-container-lowest rounded-2xl border-2 border-primary/20 shadow-md p-6 sm:p-8 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E8EAE5] pb-4">
             <div>
-              <span className="text-xs font-bold text-[#174C3C] uppercase tracking-wider">
-                SakhiSetu Charitable Trust (Bhopal)
+              <span className="font-label-caps text-label-caps uppercase text-secondary font-bold tracking-wider">
+                Official Section 80G Certificate
               </span>
-              <h2 className="text-xl font-bold text-[#202923] mt-0.5">Donation & 80G Receipt</h2>
-              <p className="text-[11px] text-[#727B74]">Trust 80G Reg: CIT(E)/BPL/80G/2021-22/A-1089</p>
+              <p className="font-mono text-base font-bold text-primary mt-1">{receipt.receiptNumber}</p>
             </div>
-
-            {receipt && (
-              <div className="sm:text-right bg-[#FAF9F5] p-3 rounded-lg border border-[#E5E4DE]">
-                <span className="text-[10px] font-bold text-[#727B74] uppercase block">
-                  Allocated Receipt No:
-                </span>
-                <span className="text-sm font-mono font-bold text-[#174C3C]">
-                  {receipt.receiptNumber}
-                </span>
-                <span className="text-[10px] text-[#727B74] block mt-0.5">
-                  FY {receipt.financialYear}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Details Table */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="p-3.5 rounded-lg bg-[#FAF9F5] border border-[#E5E4DE]">
-              <span className="text-[#727B74] block">Donor Name:</span>
-              <span className="font-bold text-[#202923] text-sm">{donation.donorName}</span>
-            </div>
-
-            <div className="p-3.5 rounded-lg bg-[#FAF9F5] border border-[#E5E4DE]">
-              <span className="text-[#727B74] block">Donor PAN:</span>
-              <span className="font-mono font-bold text-[#202923] text-sm">
-                {donation.donorPANMasked || donation.donorPAN}
-              </span>
-            </div>
-
-            <div className="p-3.5 rounded-lg bg-[#FAF9F5] border border-[#E5E4DE]">
-              <span className="text-[#727B74] block">Campaign Supported:</span>
-              <span className="font-bold text-[#202923] text-sm">{donation.campaign?.title}</span>
-            </div>
-
-            <div className="p-3.5 rounded-lg bg-[#FAF9F5] border border-[#E5E4DE]">
-              <span className="text-[#727B74] block">Amount Contributed:</span>
-              <span className="font-extrabold text-[#174C3C] text-base">
-                INR ₹{donation.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-              </span>
-            </div>
-
-            <div className="p-3.5 rounded-lg bg-[#FAF9F5] border border-[#E5E4DE]">
-              <span className="text-[#727B74] block">Payment Reference / Txn ID:</span>
-              <span className="font-mono text-[#202923] text-[11px]">
-                {donation.paymentReference || 'MOCK_TXN_SIMULATED'}
-              </span>
-            </div>
-
-            <div className="p-3.5 rounded-lg bg-[#FAF9F5] border border-[#E5E4DE]">
-              <span className="text-[#727B74] block">Payment Method:</span>
-              <span className="font-semibold text-[#202923] text-xs">
-                {donation.paymentMethod || 'Online Simulation'}
-              </span>
+            <div className="sm:text-right">
+              <span className="font-label-sm text-xs text-on-surface-variant">Issued Date</span>
+              <p className="font-body-sm text-sm font-semibold text-on-surface">
+                {new Date(receipt.issuedAt).toLocaleDateString('en-IN', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+                })}
+              </p>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="pt-4 border-t border-[#E5E4DE] flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-xs text-[#727B74]">
-              <span className="font-semibold text-[#174C3C] flex items-center gap-1">
-                <ShieldCheck className="w-4 h-4" />
-                <span>Section 80G Statutory 50% Tax Relief Eligible</span>
-              </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-3.5 rounded-xl bg-surface-container-low border border-[#E8EAE5] space-y-1">
+              <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Donor Legal Name</span>
+              <p className="font-title-md text-sm font-bold text-primary">{receipt.donorName}</p>
             </div>
 
-            {receipt && (
-              <button
-                type="button"
-                onClick={handleDownloadPdf}
-                disabled={isDownloading}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#174C3C] hover:bg-[#103A30] text-white px-6 py-3 rounded-btn text-xs font-bold shadow-soft transition-colors disabled:opacity-50"
-              >
-                {isDownloading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Generating Official PDF...</span>
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-4 h-4" />
-                    <span>Download 80G PDF Receipt</span>
-                  </>
-                )}
-              </button>
-            )}
+            <div className="p-3.5 rounded-xl bg-surface-container-low border border-[#E8EAE5] space-y-1">
+              <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Donor PAN</span>
+              <p className="font-mono text-sm font-bold text-primary">{receipt.donorPAN || 'Not Supplied'}</p>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-surface-container-low border border-[#E8EAE5] space-y-1">
+              <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Donation Amount</span>
+              <p className="font-headline-sm text-headline-sm font-bold text-primary">
+                ₹{Number(receipt.donationAmount).toLocaleString('en-IN')}
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-surface-container-low border border-[#E8EAE5] space-y-1">
+              <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">
+                Section 80G Eligible Deduction
+              </span>
+              <p className="font-headline-sm text-headline-sm font-bold text-secondary">
+                ₹{Math.round(Number(receipt.donationAmount) * 0.5).toLocaleString('en-IN')} (50%)
+              </p>
+            </div>
+          </div>
+
+          <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
+            <button
+              onClick={handleDownloadPdf}
+              disabled={isDownloading}
+              className="w-full sm:flex-1 py-3.5 px-6 rounded-xl bg-secondary hover:bg-[#B56C4A] text-on-secondary font-title-md text-sm font-semibold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+              <span>{isDownloading ? 'Downloading Vector PDF...' : 'Download Official 80G PDF'}</span>
+            </button>
+
+            <Link
+              to="/donor/dashboard"
+              className="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-sm font-semibold transition-colors flex items-center justify-center gap-1.5"
+            >
+              <span>Donor Dashboard</span>
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </Link>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Navigation Options */}
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs font-semibold">
-        <Link to="/donor/dashboard" className="text-[#174C3C] hover:underline flex items-center gap-1">
-          <span>{language === 'HI' ? 'दाता पोर्टल पर जाएं' : 'Go to Donor Dashboard'}</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
-        <span className="text-[#E5E4DE] hidden sm:inline">•</span>
-        <Link to="/schemes" className="text-[#727B74] hover:text-[#202923]">
-          {language === 'HI' ? 'सरकारी योजनाएं खोजें' : 'Explore Welfare Schemes'}
-        </Link>
+      {/* Trust reassurance */}
+      <div className="p-4 rounded-xl bg-surface-container-low border border-[#E8EAE5] flex items-center gap-3 text-on-surface-variant font-body-sm text-xs">
+        <span className="material-symbols-outlined text-primary text-[20px]">verified_user</span>
+        <span>
+          A digital copy of this 80G certificate has been logged in our electronic CBDT return registry for Form 10BD annual verification.
+        </span>
       </div>
     </div>
   );

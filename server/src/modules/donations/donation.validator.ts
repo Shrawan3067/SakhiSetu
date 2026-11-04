@@ -29,3 +29,4 @@ export const processPaymentSchema = z.object({
     isForeignCard: z.boolean().optional().default(false),
   }),
 });
+

@@ -25,3 +25,4 @@ export function getFinancialYear(date: Date = new Date()): string {
   const endYearShort = String(endYear).slice(-2);
   return `${startYear}-${endYearShort}`;
 }
+

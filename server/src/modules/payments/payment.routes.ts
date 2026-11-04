@@ -9,3 +9,4 @@ router.post('/mock/process', validate(processPaymentSchema), paymentController.p
 router.get('/:id/status', paymentController.getPaymentStatus);
 
 export default router;
+

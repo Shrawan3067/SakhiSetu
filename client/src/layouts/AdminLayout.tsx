@@ -2,32 +2,19 @@ import React, { useState } from 'react';
 import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import {
-  LayoutDashboard,
-  FileText,
-  Sparkles,
-  Layers,
-  HeartHandshake,
-  BarChart3,
-  LogOut,
-  ChevronRight,
-  Menu,
-  X,
-  ExternalLink,
-  ShieldAlert,
-  Loader2,
-} from 'lucide-react';
+import { LanguageSwitcher } from '../components/common/LanguageSwitcher';
+import { Menu, X, LogOut } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
   const { user, isAdmin, isLoading, logout } = useAuth();
   const { language } = useLanguage();
   const location = useLocation();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAF9F5]">
-        <Loader2 className="w-8 h-8 animate-spin text-[#174C3C]" />
+      <div className="min-h-screen flex items-center justify-center bg-surface">
+        <span className="material-symbols-outlined text-4xl text-primary animate-spin">refresh</span>
       </div>
     );
   }
@@ -39,35 +26,35 @@ export const AdminLayout: React.FC = () => {
   const menuItems = [
     {
       href: '/admin',
-      label: language === 'HI' ? 'डैशबोर्ड अवलोकन' : 'Dashboard Overview',
-      icon: LayoutDashboard,
+      label: language === 'HI' ? 'डैशबोर्ड अवलोकन' : 'Overview',
+      icon: 'grid_view',
       exact: true,
     },
     {
       href: '/admin/schemes',
-      label: language === 'HI' ? 'योजनाएं CMS' : 'Schemes CMS',
-      icon: FileText,
+      label: language === 'HI' ? 'योजनाएं CMS' : 'Schemes Directory',
+      icon: 'account_balance',
     },
     {
       href: '/admin/ai-reviews',
       label: language === 'HI' ? 'AI सारांश समीक्षा' : 'AI Summary Review',
-      icon: Sparkles,
+      icon: 'psychology_alt',
       badge: 'Review Desk',
     },
     {
       href: '/admin/campaigns',
-      label: language === 'HI' ? 'अभियान प्रबंधन' : 'Campaigns',
-      icon: Layers,
+      label: language === 'HI' ? 'अभियान' : 'Campaigns',
+      icon: 'volunteer_activism',
     },
     {
       href: '/admin/donations',
-      label: language === 'HI' ? 'दान रिकॉर्ड' : 'Donations & Receipts',
-      icon: HeartHandshake,
+      label: language === 'HI' ? 'दान और 80G' : 'Donations & 80G Filings',
+      icon: 'receipt_long',
     },
     {
       href: '/admin/reports',
-      label: language === 'HI' ? 'रिपोर्ट्स एवं Form 10BD' : 'Reports & Form 10BD',
-      icon: BarChart3,
+      label: language === 'HI' ? 'Form 10BD और ऑडिट' : 'Audit & Form 10BD',
+      icon: 'assured_workload',
     },
   ];
 
@@ -77,140 +64,177 @@ export const AdminLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#FAF9F5] text-[#202923]">
+    <div className="min-h-screen bg-surface text-on-surface">
       {/* Sidebar Desktop */}
-      <aside className="hidden lg:flex flex-col w-64 bg-[#103A30] text-white shrink-0 border-r border-[#174C3C]">
-        <div className="p-6 border-b border-[#174C3C] flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#C77B59] flex items-center justify-center font-bold text-white text-base font-hindi">
-              स
-            </div>
-            <div>
-              <span className="font-bold text-lg text-white">सखीसेतु</span>
-              <span className="text-[10px] text-[#A8BDA8] block">Admin Portal</span>
-            </div>
-          </Link>
-        </div>
+      <aside className="hidden lg:flex fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex-col justify-between border-r border-[#E8EAE5] shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+        <div className="flex flex-col">
+          {/* Brand */}
+          <div className="h-20 px-6 flex items-center justify-between border-b border-[#E8EAE5]">
+            <Link to="/" className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary">
+                <span className="material-symbols-outlined text-[22px]">diversity_1</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-title-md text-title-md text-primary tracking-tight font-bold">SakhiSetu</span>
+                <span className="font-label-caps text-label-caps text-on-surface-variant uppercase font-semibold">
+                  Admin Portal
+                </span>
+              </div>
+            </Link>
+          </div>
 
-        <div className="p-4 flex-1 space-y-1">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item);
-            return (
-              <Link
-                key={item.href}
-                to={item.href}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-semibold transition-all ${
-                  active
-                    ? 'bg-[#174C3C] text-white shadow-xs'
-                    : 'text-[#A8BDA8] hover:bg-[#174C3C]/40 hover:text-white'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon className={`w-4 h-4 ${active ? 'text-[#C77B59]' : 'text-[#A8BDA8]'}`} />
-                  <span>{item.label}</span>
-                </div>
-                {item.badge && (
-                  <span className="text-[9px] bg-[#C77B59] text-white px-1.5 py-0.5 rounded-full font-bold">
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </div>
+          {/* Environment Status */}
+          <div className="px-4 py-3">
+            <div className="px-3 py-1.5 rounded-xl bg-surface-container-low flex items-center justify-between border border-[#E8EAE5]">
+              <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">Environment</span>
+              <span className="font-label-caps text-label-caps text-on-primary-fixed-variant bg-primary-fixed px-2 py-0.5 rounded font-semibold">
+                Govt Sync Live
+              </span>
+            </div>
+          </div>
 
-        <div className="p-4 border-t border-[#174C3C] space-y-2">
-          <Link
-            to="/"
-            target="_blank"
-            className="flex items-center justify-between text-xs text-[#A8BDA8] hover:text-white px-3 py-2 rounded-lg hover:bg-[#174C3C]/40 transition-colors"
-          >
-            <span className="flex items-center gap-2">
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span>{language === 'HI' ? 'पब्लिक वेबसाइट देखें' : 'View Public Site'}</span>
+          <div className="px-6 pt-3 pb-2">
+            <span className="font-label-caps text-label-caps text-on-surface-variant uppercase font-semibold tracking-wider">
+              Operations Management
             </span>
-          </Link>
+          </div>
+
+          {/* Navigation */}
+          <nav className="px-4 flex flex-col gap-1">
+            {menuItems.map((item) => {
+              const active = isActive(item);
+              return (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={`flex items-center justify-between px-4 py-2.5 rounded-xl font-label-md text-label-md transition-colors ${
+                    active
+                      ? 'bg-primary-container text-on-primary font-semibold shadow-xs'
+                      : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </div>
+                  {item.badge && (
+                    <span className="px-2 py-0.5 rounded-full bg-secondary text-on-secondary font-label-caps text-[10px] uppercase font-bold">
+                      {item.badge}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Portal Health & Logout */}
+        <div className="p-4 border-t border-[#E8EAE5] space-y-3">
+          <div className="p-3.5 rounded-xl bg-surface-container-low flex flex-col gap-1 border border-[#E8EAE5]">
+            <div className="flex items-center justify-between">
+              <span className="font-label-caps text-label-caps text-on-surface-variant uppercase font-semibold">
+                Portal Health
+              </span>
+              <span className="flex items-center gap-1 font-label-sm text-label-sm text-primary font-medium">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                Online
+              </span>
+            </div>
+            <span className="font-body-sm text-xs text-on-surface-variant">NIC &amp; MP Portal Synced</span>
+          </div>
 
           <button
-            type="button"
             onClick={logout}
-            className="w-full flex items-center gap-2.5 text-xs text-red-300 hover:text-red-200 hover:bg-red-900/20 px-3 py-2 rounded-lg transition-colors font-semibold"
+            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-on-surface-variant hover:text-error hover:bg-surface-container-low font-label-sm text-label-sm transition-colors"
           >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>{language === 'HI' ? 'लॉग आउट' : 'Log Out'}</span>
+            <LogOut className="w-4 h-4" />
+            <span>Sign Out</span>
           </button>
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Header Bar */}
-        <header className="bg-white border-b border-[#E5E4DE] h-16 flex items-center justify-between px-4 sm:px-8">
+      {/* Top Header Bar for Desktop */}
+      <div className="lg:pl-72">
+        <header className="fixed top-0 left-0 lg:left-72 right-0 h-20 bg-surface/90 backdrop-blur-xl border-b border-[#E8EAE5] z-40 px-6 lg:px-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
-              type="button"
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-1.5 rounded-lg text-[#727B74] hover:bg-[#FAF9F5]"
+              onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+              className="lg:hidden p-2 text-on-surface rounded-xl hover:bg-surface-container"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <div className="flex items-center gap-2 text-xs text-[#727B74]">
-              <span>Admin</span>
-              <ChevronRight className="w-3 h-3" />
-              <span className="font-semibold text-[#202923]">Company A • SakhiSetu</span>
+            <span className="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider bg-surface-container-high px-3 py-1 rounded-full font-semibold">
+              Govt &amp; Field Operations Portal
+            </span>
+            <div className="hidden sm:flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs">
+              <span className="material-symbols-outlined text-[16px] text-primary">cloud_done</span>
+              <span>NIC Data Sync Active</span>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-right">
-              <div>
-                <p className="text-xs font-bold text-[#202923]">{user.fullName}</p>
-                <p className="text-[10px] text-[#727B74]">System Administrator</p>
+            <LanguageSwitcher />
+
+            <div className="h-7 w-[1px] bg-surface-container-high"></div>
+
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex flex-col text-right">
+                <span className="font-title-md text-[14px] text-on-surface font-semibold leading-tight">
+                  {user.fullName}
+                </span>
+                <span className="font-label-sm text-xs text-on-surface-variant">Lead Operations Director</span>
               </div>
-              <div className="w-8 h-8 rounded-full bg-[#174C3C] text-white flex items-center justify-center font-bold text-xs">
-                A
+              <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-on-primary">
+                <span className="material-symbols-outlined text-[18px]">person</span>
               </div>
             </div>
           </div>
         </header>
 
-        {/* Mobile Sidebar Modal */}
-        {sidebarOpen && (
-          <div className="fixed inset-0 z-50 flex lg:hidden">
-            <div className="fixed inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
-            <div className="relative flex-1 flex flex-col max-w-xs w-full bg-[#103A30] text-white p-4">
-              <div className="flex items-center justify-between pb-4 border-b border-[#174C3C]">
-                <span className="font-bold text-lg text-white">सखीसेतु Admin</span>
-                <button onClick={() => setSidebarOpen(false)} className="text-[#A8BDA8]">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <div className="flex-1 py-4 space-y-1">
-                {menuItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Link
-                      key={item.href}
-                      to={item.href}
-                      onClick={() => setSidebarOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-[#A8BDA8] hover:bg-[#174C3C] hover:text-white"
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span>{item.label}</span>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Page Content */}
-        <main className="flex-1 p-4 sm:p-8 overflow-y-auto">
+        {/* Main Content Area */}
+        <main className="w-full pt-20 p-6 lg:p-8 min-h-screen">
           <Outlet />
         </main>
       </div>
+
+      {/* Mobile Drawer */}
+      {mobileSidebarOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex">
+          <div className="fixed inset-0 bg-black/40" onClick={() => setMobileSidebarOpen(false)}></div>
+          <div className="relative w-72 bg-surface-container-lowest h-full shadow-2xl flex flex-col justify-between p-4 z-10">
+            <div>
+              <div className="flex items-center justify-between pb-4 border-b border-[#E8EAE5]">
+                <span className="font-title-md text-primary font-bold">SakhiSetu Admin</span>
+                <button onClick={() => setMobileSidebarOpen(false)}>
+                  <X className="w-6 h-6 text-on-surface" />
+                </button>
+              </div>
+              <nav className="pt-4 flex flex-col gap-1">
+                {menuItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    onClick={() => setMobileSidebarOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl font-label-md text-label-md text-on-surface hover:bg-surface-container"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+              </nav>
+            </div>
+            <button
+              onClick={() => {
+                logout();
+                setMobileSidebarOpen(false);
+              }}
+              className="w-full py-2.5 rounded-xl bg-error-container text-on-error-container font-label-md text-label-md"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

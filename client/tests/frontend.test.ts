@@ -32,3 +32,4 @@ describe('Frontend Architecture & API Client Suite', () => {
     expect(brandColors.terracotta).toBe('#C77B59');
   });
 });
+

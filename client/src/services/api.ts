@@ -90,6 +90,15 @@ class ApiClient {
     });
   }
 
+  async requestCallback(data: { applicantName: string; phoneNumber: string; preferredTime?: string; district: string; villagePanchayat?: string; notes?: string }) {
+    return this.requestHelplineCallback({
+      name: data.applicantName,
+      phone: data.phoneNumber,
+      district: data.district,
+      notes: `${data.villagePanchayat ? `Village: ${data.villagePanchayat}. ` : ''}${data.notes || ''}`.trim(),
+    });
+  }
+
   // --- Campaigns ---
   async getPublicCampaigns() {
     return this.request<any[]>('/campaigns');
@@ -207,6 +216,10 @@ class ApiClient {
   // --- Admin AI Review ---
   async generateAISchemeSummary(schemeId: string) {
     return this.request<any>(`/admin/ai/scheme-summary/${schemeId}`, { method: 'POST' });
+  }
+
+  async generateAISummary(schemeId: string) {
+    return this.generateAISchemeSummary(schemeId);
   }
 
   async listAIReviews(status?: string) {

@@ -2,18 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { api } from '../../services/api';
 import { Campaign } from '../../types';
-import { TableSkeleton } from '../../components/common/LoadingSkeleton';
-import {
-  Layers,
-  Plus,
-  Edit,
-  Eye,
-  CheckCircle2,
-  AlertCircle,
-  X,
-  Loader2,
-  Users,
-} from 'lucide-react';
 
 export const AdminCampaignsPage: React.FC = () => {
   const { language } = useLanguage();
@@ -27,7 +15,7 @@ export const AdminCampaignsPage: React.FC = () => {
     title: '',
     category: 'Livelihood',
     description: '',
-    imageUrl: '',
+    imageUrl: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=1200&q=80',
     goalAmount: 500000,
     status: 'ACTIVE',
   });
@@ -78,24 +66,17 @@ export const AdminCampaignsPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaving(true);
     setModalError(null);
+    setIsSaving(true);
 
     try {
       if (editingCampaign) {
-        await api.updateAdminCampaign(editingCampaign.id, {
-          ...form,
-          goalAmount: Number(form.goalAmount),
-        });
+        await api.updateAdminCampaign(editingCampaign.id, form);
       } else {
-        await api.createAdminCampaign({
-          ...form,
-          goalAmount: Number(form.goalAmount),
-        });
+        await api.createAdminCampaign(form);
       }
-
       setIsModalOpen(false);
       fetchCampaigns();
     } catch (err: any) {
@@ -106,216 +87,215 @@ export const AdminCampaignsPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-6 max-w-[1600px] mx-auto w-full animate-fadeIn">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-6 rounded-2xl bg-surface-container-lowest shadow-sm border border-[#E8EAE5] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#103A30]">
-            {language === 'HI' ? 'अभियान प्रबंधन' : 'Campaign Management'}
+          <span className="font-label-caps text-label-caps uppercase text-secondary font-bold tracking-wider">
+            Philanthropic Governance
+          </span>
+          <h1 className="font-headline-md text-headline-md text-primary font-bold">
+            Impact Campaigns &amp; Cause Funds
           </h1>
-          <p className="text-xs text-[#727B74] mt-0.5">
-            Create and track welfare fundraising goals, donor numbers, and milestones.
+          <p className="font-body-sm text-body-sm text-on-surface-variant">
+            Manage public fundraising drives, targets, and direct community allocations.
           </p>
         </div>
 
         <button
           type="button"
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#174C3C] hover:bg-[#103A30] text-white text-xs font-bold rounded-btn transition-colors shadow-soft"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md font-semibold transition-all shadow-sm cursor-pointer self-start sm:self-auto"
         >
-          <Plus className="w-4 h-4" />
-          <span>{language === 'HI' ? 'नया अभियान जोड़ें' : 'Create Campaign'}</span>
+          <span className="material-symbols-outlined text-[18px]">add</span>
+          <span>+ Create Campaign</span>
         </button>
       </div>
 
-      {/* Campaigns Table */}
-      <div className="bg-white rounded-card border border-[#E5E4DE] shadow-xs overflow-hidden">
-        {isLoading ? (
-          <div className="p-6">
-            <TableSkeleton rows={4} />
-          </div>
-        ) : campaigns.length === 0 ? (
-          <div className="p-12 text-center text-xs text-[#727B74]">No campaigns created yet.</div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="bg-[#FAF9F5] border-b border-[#E5E4DE] text-[11px] font-bold text-[#727B74] uppercase">
-                  <th className="py-3 px-4">Title</th>
-                  <th className="py-3 px-4">Category</th>
-                  <th className="py-3 px-4">Target (Goal)</th>
-                  <th className="py-3 px-4">Raised</th>
-                  <th className="py-3 px-4">Progress</th>
-                  <th className="py-3 px-4">Donors</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#FAF9F5]">
-                {campaigns.map((c) => (
-                  <tr key={c.id} className="hover:bg-[#FAF9F5]/60 transition-colors">
-                    <td className="py-3.5 px-4 font-bold text-[#202923] max-w-[220px] truncate">
-                      {c.title}
-                    </td>
-                    <td className="py-3.5 px-4 text-[#727B74]">{c.category}</td>
-                    <td className="py-3.5 px-4 font-medium text-[#727B74]">
-                      ₹{c.goalAmount.toLocaleString('en-IN')}
-                    </td>
-                    <td className="py-3.5 px-4 font-bold text-[#174C3C]">
-                      ₹{c.collectedAmount.toLocaleString('en-IN')}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 bg-[#E5E4DE] rounded-full h-1.5 overflow-hidden">
-                          <div
-                            className="bg-[#174C3C] h-1.5 rounded-full"
-                            style={{ width: `${c.progressPercentage}%` }}
-                          ></div>
-                        </div>
-                        <span className="font-semibold text-[11px] text-[#202923]">
-                          {c.progressPercentage}%
+      {/* Campaigns Grid */}
+      {isLoading ? (
+        <div className="p-12 text-center text-on-surface-variant">Loading campaigns...</div>
+      ) : campaigns.length === 0 ? (
+        <div className="bg-surface-container-lowest rounded-2xl p-12 text-center space-y-2 border border-[#E8EAE5]">
+          <span className="material-symbols-outlined text-4xl text-outline">volunteer_activism</span>
+          <h4 className="font-title-md text-primary font-bold">No Campaigns Found</h4>
+          <p className="font-body-sm text-on-surface-variant">Create a new impact initiative to start fundraising.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {campaigns.map((c) => {
+            const percent = Math.min(100, Math.round((c.collectedAmount / c.goalAmount) * 100));
+            return (
+              <article
+                key={c.id}
+                className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm border border-[#E8EAE5] flex flex-col justify-between hover:shadow-md transition-shadow"
+              >
+                <div>
+                  <div className="relative h-44 w-full overflow-hidden bg-surface-container-high">
+                    {c.imageUrl ? (
+                      <img src={c.imageUrl} alt={c.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-outline">
+                        <span className="material-symbols-outlined text-4xl">image</span>
+                      </div>
+                    )}
+                    <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur font-label-sm text-xs font-semibold text-primary">
+                      {c.category}
+                    </span>
+                  </div>
+
+                  <div className="p-6 space-y-3">
+                    <h3 className="font-title-md text-title-md font-bold text-primary">{c.title}</h3>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+                      {c.description}
+                    </p>
+
+                    <div className="space-y-1.5 pt-2">
+                      <div className="flex justify-between font-label-sm text-xs">
+                        <span className="font-bold text-primary">
+                          ₹{c.collectedAmount.toLocaleString('en-IN')} raised
+                        </span>
+                        <span className="text-on-surface-variant font-medium">
+                          Goal: ₹{c.goalAmount.toLocaleString('en-IN')} ({percent}%)
                         </span>
                       </div>
-                    </td>
-                    <td className="py-3.5 px-4 text-[#727B74]">{c.donorCount || 0}</td>
-                    <td className="py-3.5 px-4">
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          c.status === 'ACTIVE'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-gray-100 text-gray-700'
-                        }`}
-                      >
-                        {c.status}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => handleOpenEdit(c)}
-                        className="p-1.5 rounded-btn text-[#727B74] hover:text-[#174C3C] hover:bg-[#FAF9F5] transition-colors"
-                        title="Edit campaign"
-                      >
-                        <Edit className="w-3.5 h-3.5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                      <div className="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+                        <div className="bg-primary h-full rounded-full" style={{ width: `${percent}%` }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 pt-0 border-t border-[#E8EAE5] flex items-center justify-between gap-2 mt-4">
+                  <span
+                    className={`px-2.5 py-0.5 rounded-full font-label-sm text-xs font-semibold ${
+                      c.status === 'ACTIVE'
+                        ? 'bg-primary-fixed text-on-primary-fixed'
+                        : 'bg-surface-container-high text-on-surface-variant'
+                    }`}
+                  >
+                    {c.status}
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => handleOpenEdit(c)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-primary font-label-sm text-xs font-semibold transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[15px]">edit</span>
+                    <span>Edit Drive</span>
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
 
       {/* CREATE / EDIT MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-white rounded-card shadow-elevated border border-[#E5E4DE] w-full max-w-lg">
-            <div className="p-5 border-b border-[#E5E4DE] flex items-center justify-between">
-              <h3 className="text-sm font-bold text-[#103A30]">
-                {editingCampaign ? 'Edit Welfare Campaign' : 'Create New Welfare Campaign'}
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-surface-container-lowest max-w-xl w-full rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6 border border-[#E8EAE5] animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-[#E8EAE5] pb-4">
+              <h3 className="font-title-md text-title-md text-primary font-bold">
+                {editingCampaign ? 'Edit Campaign' : 'Create New Campaign'}
               </h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-[#727B74]">
-                <X className="w-5 h-5" />
+              <button onClick={() => setIsModalOpen(false)} className="text-on-surface-variant hover:text-on-surface">
+                ✕
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              {modalError && (
-                <div className="p-3 rounded-lg bg-red-50 text-red-700 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{modalError}</span>
-                </div>
-              )}
+            {modalError && (
+              <div className="p-3.5 rounded-xl bg-error-container text-on-error-container text-xs font-semibold">
+                {modalError}
+              </div>
+            )}
 
-              <div>
-                <label className="block text-xs font-semibold text-[#202923] mb-1">
-                  Campaign Title *
-                </label>
+            <form onSubmit={handleSave} className="space-y-4">
+              <div className="space-y-1">
+                <label className="font-label-sm text-xs font-semibold text-on-surface">Campaign Title *</label>
                 <input
                   type="text"
                   required
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder="e.g. Rural Women Livelihood Micro-Capital"
-                  className="w-full px-3 py-2 text-xs border border-[#E5E4DE] rounded-btn"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-container-low text-sm border border-[#E8EAE5] focus:outline-hidden"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-[#202923] mb-1">Category *</label>
-                  <input
-                    type="text"
-                    required
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="font-label-sm text-xs font-semibold text-on-surface">Category</label>
+                  <select
                     value={form.category}
                     onChange={(e) => setForm({ ...form, category: e.target.value })}
-                    className="w-full px-3 py-2 text-xs border border-[#E5E4DE] rounded-btn"
-                  />
+                    className="w-full px-3 py-2 rounded-xl bg-surface-container-low text-sm border border-[#E8EAE5] focus:outline-hidden"
+                  >
+                    <option value="Livelihood">Livelihood &amp; Enterprise</option>
+                    <option value="Healthcare">Healthcare &amp; Vans</option>
+                    <option value="Education">Education &amp; Skilling</option>
+                    <option value="Emergency">Emergency Social Relief</option>
+                  </select>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-[#202923] mb-1">
-                    Goal Amount (INR) *
-                  </label>
+                <div className="space-y-1">
+                  <label className="font-label-sm text-xs font-semibold text-on-surface">Goal Amount (INR) *</label>
                   <input
                     type="number"
                     required
-                    min={1000}
                     value={form.goalAmount}
-                    onChange={(e) => setForm({ ...form, goalAmount: parseInt(e.target.value, 10) || 0 })}
-                    className="w-full px-3 py-2 text-xs border border-[#E5E4DE] rounded-btn font-bold"
+                    onChange={(e) => setForm({ ...form, goalAmount: Number(e.target.value) })}
+                    className="w-full px-3 py-2 rounded-xl bg-surface-container-low text-sm border border-[#E8EAE5] focus:outline-hidden"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-[#202923] mb-1">Description *</label>
+              <div className="space-y-1">
+                <label className="font-label-sm text-xs font-semibold text-on-surface">Description *</label>
                 <textarea
-                  required
                   rows={3}
+                  required
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-[#E5E4DE] rounded-btn"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-container-low text-sm border border-[#E8EAE5] focus:outline-hidden"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-[#202923] mb-1">Image URL</label>
+              <div className="space-y-1">
+                <label className="font-label-sm text-xs font-semibold text-on-surface">Cover Image URL</label>
                 <input
                   type="url"
                   value={form.imageUrl}
                   onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-[#E5E4DE] rounded-btn font-mono"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-container-low text-sm border border-[#E8EAE5] focus:outline-hidden"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-[#202923] mb-1">Status</label>
+              <div className="space-y-1">
+                <label className="font-label-sm text-xs font-semibold text-on-surface">Status</label>
                 <select
                   value={form.status}
                   onChange={(e) => setForm({ ...form, status: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-[#E5E4DE] rounded-btn bg-[#FAF9F5]"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-container-low text-sm border border-[#E8EAE5] focus:outline-hidden"
                 >
                   <option value="ACTIVE">ACTIVE</option>
                   <option value="COMPLETED">COMPLETED</option>
                   <option value="PAUSED">PAUSED</option>
-                  <option value="ARCHIVED">ARCHIVED</option>
                 </select>
               </div>
 
-              <div className="pt-4 border-t border-[#E5E4DE] flex justify-end gap-2">
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-[#E8EAE5]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-[#E5E4DE] text-xs font-semibold rounded-btn"
+                  className="px-4 py-2 rounded-xl bg-surface-container text-on-surface font-label-md text-sm font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 bg-[#174C3C] text-white text-xs font-bold rounded-btn disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-sm font-semibold transition-all disabled:opacity-50"
                 >
                   {isSaving ? 'Saving...' : editingCampaign ? 'Update Campaign' : 'Create Campaign'}
                 </button>

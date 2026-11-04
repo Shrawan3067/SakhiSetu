@@ -215,3 +215,4 @@ Under high traffic (e.g. 5,000 donations during holiday campaigns), naive `COUNT
 1. **WhatsApp Bot Integration**: WhatsApp Cloud API integration allowing rural women to send voice messages in Hindi and receive matching scheme audio summaries.
 2. **DigiLocker Integration**: Verification of applicant Aadhaar and Samagra IDs directly through India Stack DigiLocker APIs.
 3. **Automated Form 10BD API Filing**: Direct JSON integration with the Income Tax Department portal for automated annual filing submission.
+

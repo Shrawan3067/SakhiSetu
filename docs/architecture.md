@@ -167,3 +167,4 @@ sequenceDiagram
 2. **PAN Masking**: Donor PANs are stored securely in PostgreSQL for 80G and Form 10BD compliance, but all user-facing listings, APIs, and logs mask the middle digits (e.g. `AB******4F`).
 3. **FCRA Contribution Block**: Non-Indian cards and international contributions are actively blocked at both validation and gateway simulation layers with explicit explanatory messaging.
 4. **Access Control**: Donors can only access their own donations and receipts. Any attempt by Donor A to access Donor B's receipt responds with `403 FORBIDDEN`.
+

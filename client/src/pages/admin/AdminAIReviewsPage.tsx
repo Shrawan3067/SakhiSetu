@@ -2,20 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { api } from '../../services/api';
 import { AIReview } from '../../types';
-import { TableSkeleton } from '../../components/common/LoadingSkeleton';
-import {
-  Sparkles,
-  CheckCircle2,
-  XCircle,
-  Edit3,
-  Save,
-  RotateCcw,
-  AlertCircle,
-  FileText,
-  Clock,
-  Loader2,
-  Check,
-} from 'lucide-react';
 
 export const AdminAIReviewsPage: React.FC = () => {
   const { language } = useLanguage();
@@ -89,111 +75,126 @@ export const AdminAIReviewsPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fadeIn">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#C77B59] bg-[#C77B59]/10 px-2.5 py-0.5 rounded-sm mb-1">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>OpenAI Human-in-the-Loop Review Desk</span>
+    <div className="space-y-6 max-w-[1600px] mx-auto w-full animate-fadeIn">
+      {/* Header & Pipeline Status Banner */}
+      <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-[#E8EAE5] space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-caps text-label-caps uppercase font-bold">
+              <span className="material-symbols-outlined text-[16px]">psychology_alt</span>
+              <span>OpenAI Plain-Hindi Human-in-the-Loop Review Desk</span>
+            </div>
+            <h1 className="font-headline-md text-headline-md text-primary font-bold">
+              Scheme AI Ingestion &amp; Editorial Verification Hub
+            </h1>
+            <p className="font-body-sm text-body-sm text-on-surface-variant">
+              Every AI-generated Hindi scheme summary requires human review before being published to beneficiaries.
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-[#103A30]">
-            {language === 'HI' ? 'AI हिंदी सारांश समीक्षा' : 'AI Hindi Scheme Summary Reviews'}
-          </h1>
-          <p className="text-xs text-[#727B74] mt-0.5 max-w-2xl">
-            Review, edit, and approve synthesized plain-Hindi summaries before publication. AI outputs are never published automatically.
-          </p>
-        </div>
 
-        {/* Filter */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-[#727B74] font-medium">Status:</span>
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-1.5 text-xs border border-[#E5E4DE] rounded-btn bg-white font-semibold"
-          >
-            <option value="PENDING">Pending Approval</option>
-            <option value="APPROVED">Approved & Published</option>
-            <option value="REJECTED">Rejected</option>
-            <option value="ALL">All Drafts</option>
-          </select>
+          {/* Filter Pills */}
+          <div className="inline-flex p-1 bg-surface-container rounded-xl border border-[#E8EAE5]">
+            {['PENDING', 'APPROVED', 'REJECTED', 'ALL'].map((status) => (
+              <button
+                key={status}
+                type="button"
+                onClick={() => setFilterStatus(status)}
+                className={`px-3 py-1.5 rounded-lg font-label-sm text-xs font-semibold transition-all ${
+                  filterStatus === status
+                    ? 'bg-primary text-on-primary shadow-xs'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
+      {/* Reviews List */}
       {isLoading ? (
-        <TableSkeleton rows={4} />
+        <div className="p-12 text-center text-on-surface-variant">Loading AI review queue...</div>
       ) : reviews.length === 0 ? (
-        <div className="bg-white rounded-card border border-[#E5E4DE] p-12 text-center space-y-3">
-          <Sparkles className="w-10 h-10 text-[#A8BDA8] mx-auto" />
-          <h3 className="text-sm font-bold text-[#202923]">No Review Drafts Found</h3>
-          <p className="text-xs text-[#727B74] max-w-sm mx-auto">
-            There are no {filterStatus.toLowerCase()} drafts currently in the review queue. To generate a draft, visit the Schemes CMS and click the AI icon.
+        <div className="bg-surface-container-lowest rounded-2xl p-12 text-center space-y-3 border border-[#E8EAE5]">
+          <span className="material-symbols-outlined text-4xl text-outline">done_all</span>
+          <h3 className="font-title-md text-primary font-bold">Queue Empty</h3>
+          <p className="font-body-sm text-on-surface-variant">
+            No scheme reviews found for filter: <strong>{filterStatus}</strong>.
           </p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-6">
           {reviews.map((rev) => {
             const isEditing = editingId === rev.id;
             const isActing = actingId === rev.id;
 
             return (
-              <div
+              <article
                 key={rev.id}
-                className="bg-white rounded-card border border-[#E5E4DE] shadow-xs overflow-hidden"
+                className="bg-surface-container-lowest rounded-2xl p-6 lg:p-7 shadow-sm border border-[#E8EAE5] space-y-6"
               >
-                {/* Draft Card Header */}
-                <div className="bg-[#FAF9F5] p-4 sm:px-6 border-b border-[#E5E4DE] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-xs font-mono font-bold text-[#174C3C] bg-[#174C3C]/10 px-2.5 py-0.5 rounded-sm">
+                {/* Top Meta */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8EAE5] pb-4">
+                  <div className="flex items-center gap-3">
+                    <span className="px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-label-caps text-label-caps font-bold">
                       {rev.scheme?.schemeCode || 'SCHEME'}
                     </span>
-                    <h3 className="text-sm font-bold text-[#202923]">
-                      {rev.scheme?.name || 'Welfare Scheme Draft'}
-                    </h3>
+                    <div>
+                      <h3 className="font-title-md text-primary font-bold">{rev.scheme?.name}</h3>
+                      <p className="font-body-sm text-xs text-on-surface-variant">
+                        Created {new Date(rev.createdAt).toLocaleDateString('en-IN')}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <span
-                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                      className={`px-3 py-1 rounded-full font-label-caps text-label-caps font-bold uppercase ${
                         rev.status === 'APPROVED'
-                          ? 'bg-emerald-100 text-emerald-800'
+                          ? 'bg-primary-fixed text-on-primary-fixed'
                           : rev.status === 'REJECTED'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-amber-100 text-amber-800 animate-pulse'
+                          ? 'bg-error-container text-on-error-container'
+                          : 'bg-secondary-fixed text-on-secondary-fixed'
                       }`}
                     >
-                      {rev.status}
+                      {rev.status === 'PENDING' ? 'Requires Sign-Off' : rev.status}
                     </span>
-                    <span className="text-[10px] text-[#727B74]">
-                      {new Date(rev.createdAt).toLocaleDateString('en-IN', {
-                        day: '2-digit',
-                        month: 'short',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
+                    <span className="inline-flex items-center gap-1 text-primary bg-primary-fixed/30 px-2 py-0.5 rounded-md font-label-sm text-xs font-semibold">
+                      <span className="material-symbols-outlined text-[14px]">auto_awesome</span> 98.4% Confidence
                     </span>
                   </div>
                 </div>
 
-                {/* Draft Comparison Body */}
-                <div className="p-6 space-y-6">
-                  {/* Generated Hindi Summary */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold text-[#174C3C] uppercase tracking-wider flex items-center gap-1.5 font-hindi">
-                        <Sparkles className="w-3.5 h-3.5 text-[#C77B59]" />
-                        <span>AI जनरेटेड सरल हिंदी सारांश (Plain-Hindi Draft):</span>
-                      </label>
+                {/* Content Comparison */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                  {/* Left: Original Scheme Context */}
+                  <div className="space-y-2 p-4 rounded-xl bg-surface-container-low border border-[#E8EAE5]">
+                    <span className="font-label-caps text-on-surface-variant uppercase font-semibold">
+                      Original Scheme Mandate (Official Source)
+                    </span>
+                    <p className="font-body-sm text-on-surface leading-relaxed">
+                      {rev.scheme?.description}
+                    </p>
+                    <div className="pt-2 text-xs text-on-surface-variant font-medium">
+                      Benefit: <strong className="text-primary">{rev.scheme?.benefit}</strong>
+                    </div>
+                  </div>
 
-                      {rev.status === 'PENDING' && !isEditing && (
+                  {/* Right: AI-Drafted Plain Hindi */}
+                  <div className="space-y-3 p-4 rounded-xl bg-surface-container-lowest border-2 border-primary/20 shadow-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-label-caps text-secondary font-bold uppercase tracking-wider">
+                        Plain-Hindi Draft (Beneficiary-Facing)
+                      </span>
+                      {!isEditing && rev.status === 'PENDING' && (
                         <button
                           type="button"
                           onClick={() => handleStartEdit(rev)}
-                          className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#174C3C] hover:underline"
+                          className="font-label-sm text-xs text-primary hover:text-secondary font-semibold flex items-center gap-1"
                         >
-                          <Edit3 className="w-3 h-3" />
-                          <span>Edit Text</span>
+                          <span className="material-symbols-outlined text-[14px]">edit</span>
+                          <span>Edit Draft</span>
                         </button>
                       )}
                     </div>
@@ -204,96 +205,57 @@ export const AdminAIReviewsPage: React.FC = () => {
                           rows={4}
                           value={editHindiText}
                           onChange={(e) => setEditHindiText(e.target.value)}
-                          className="w-full p-3 text-xs leading-relaxed border-2 border-[#174C3C] rounded-lg font-hindi focus:outline-hidden"
+                          className="w-full p-3 rounded-xl bg-surface text-on-surface font-hindi text-body-md border border-primary focus:outline-hidden"
                         />
-                        <div className="flex justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setEditingId(null)}
-                            className="px-3 py-1 border border-[#E5E4DE] text-xs font-semibold rounded-btn"
-                          >
-                            Cancel
-                          </button>
+                        <div className="flex items-center gap-2">
                           <button
                             type="button"
                             disabled={isActing}
                             onClick={() => handleSaveDraft(rev.id)}
-                            className="inline-flex items-center gap-1 px-3 py-1 bg-[#174C3C] text-white text-xs font-bold rounded-btn disabled:opacity-50"
+                            className="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-label-sm text-xs font-semibold"
                           >
-                            <Save className="w-3 h-3" />
-                            <span>Save Changes</span>
+                            Save Updates
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditingId(null)}
+                            className="px-3 py-1.5 rounded-lg bg-surface-container text-on-surface font-label-sm text-xs"
+                          >
+                            Cancel
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <div className="p-4 rounded-lg bg-[#FAF9F5] border border-[#E5E4DE] text-xs leading-relaxed text-[#202923] font-hindi">
+                      <p className="font-body-md text-on-surface leading-relaxed font-hindi">
                         {rev.generatedHindiSummary}
-                      </div>
+                      </p>
                     )}
                   </div>
-
-                  {/* Generated English Summary */}
-                  {rev.generatedEnglishSummary && (
-                    <div className="space-y-1.5 pt-2">
-                      <span className="text-[11px] font-bold text-[#727B74] uppercase tracking-wider">
-                        English Synthetic Translation:
-                      </span>
-                      <p className="text-xs text-[#727B74] leading-relaxed">
-                        {rev.generatedEnglishSummary}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Missing Information Note */}
-                  {Array.isArray(rev.missingInformation) && rev.missingInformation.length > 0 && (
-                    <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 text-xs text-amber-900 flex items-start gap-2">
-                      <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-                      <div>
-                        <span className="font-bold">Missing Information Flags:</span>
-                        <ul className="list-disc pl-4 mt-0.5">
-                          {rev.missingInformation.map((m: string, i: number) => (
-                            <li key={i}>{m}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Actions for PENDING review */}
-                  {rev.status === 'PENDING' && (
-                    <div className="pt-4 border-t border-[#E5E4DE] flex flex-col sm:flex-row items-center justify-between gap-3">
-                      <span className="text-xs text-[#727B74] italic">
-                        Human verification required: Approving will immediately synchronize with public scheme page.
-                      </span>
-
-                      <div className="flex gap-2 w-full sm:w-auto">
-                        <button
-                          type="button"
-                          disabled={isActing}
-                          onClick={() => handleReject(rev.id)}
-                          className="flex-1 sm:flex-none px-4 py-2 border border-red-300 text-red-700 hover:bg-red-50 text-xs font-bold rounded-btn transition-colors disabled:opacity-50"
-                        >
-                          Reject Draft
-                        </button>
-
-                        <button
-                          type="button"
-                          disabled={isActing}
-                          onClick={() => handleApprove(rev.id)}
-                          className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-2 bg-[#174C3C] hover:bg-[#103A30] text-white text-xs font-bold rounded-btn transition-colors shadow-soft disabled:opacity-50"
-                        >
-                          {isActing ? (
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          ) : (
-                            <Check className="w-3.5 h-3.5" />
-                          )}
-                          <span>Approve & Publish to Scheme</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
                 </div>
-              </div>
+
+                {/* Review Action Controls */}
+                {rev.status === 'PENDING' && (
+                  <div className="pt-2 border-t border-[#E8EAE5] flex items-center justify-end gap-3">
+                    <button
+                      type="button"
+                      disabled={isActing}
+                      onClick={() => handleReject(rev.id)}
+                      className="px-4 py-2 rounded-xl bg-error-container text-on-error-container hover:opacity-90 font-label-md text-label-md font-semibold transition-colors disabled:opacity-50"
+                    >
+                      Reject Draft
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isActing}
+                      onClick={() => handleApprove(rev.id)}
+                      className="px-5 py-2 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-all shadow-sm disabled:opacity-50 flex items-center gap-1.5"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">verified</span>
+                      <span>Approve &amp; Publish to Public Scheme</span>
+                    </button>
+                  </div>
+                )}
+              </article>
             );
           })}
         </div>

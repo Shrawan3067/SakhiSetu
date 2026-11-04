@@ -95,6 +95,8 @@ export interface AIReview {
     nameHi?: string | null;
     slug?: string;
     category?: string;
+    description?: string;
+    benefit?: string;
   };
   generatedHindiSummary: string;
   generatedEnglishSummary: string;
@@ -134,3 +136,4 @@ export interface EligibilityResult {
     hi: string;
   };
 }
+

@@ -100,3 +100,4 @@ export const optionalAuthenticate = async (req: Request, _res: Response, next: N
     next(error);
   }
 };
+

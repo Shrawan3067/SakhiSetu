@@ -16,3 +16,4 @@ router.post('/reviews/:id/approve', aiController.approveReview);
 router.post('/reviews/:id/reject', aiController.rejectReview);
 
 export default router;
+

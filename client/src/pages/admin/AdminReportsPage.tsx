@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { api } from '../../services/api';
-import { TableSkeleton } from '../../components/common/LoadingSkeleton';
-import {
-  Download,
-  FileSpreadsheet,
-  Building,
-  ShieldCheck,
-  Calendar,
-  CheckCircle2,
-  ExternalLink,
-  Layers,
-  Loader2,
-} from 'lucide-react';
 
 export const AdminReportsPage: React.FC = () => {
   const { language } = useLanguage();
@@ -44,18 +32,18 @@ export const AdminReportsPage: React.FC = () => {
   const totalAmount = form10bdRecords.reduce((sum, r) => sum + Number(r.donationAmount), 0);
 
   return (
-    <div className="space-y-8 animate-fadeIn">
+    <div className="space-y-8 max-w-[1600px] mx-auto w-full animate-fadeIn">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#174C3C] bg-[#174C3C]/10 px-2.5 py-0.5 rounded-sm mb-1">
-            <Building className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary font-label-caps text-label-caps uppercase font-bold mb-1">
+            <span className="material-symbols-outlined text-[16px]">account_balance</span>
             <span>Statutory NGO Return Filing Suite</span>
           </div>
-          <h1 className="text-2xl font-bold text-[#103A30]">
+          <h1 className="font-headline-md text-headline-md text-primary font-bold">
             {language === 'HI' ? 'फॉर्म 10BD अनुपालन एवं रिपोर्ट' : 'Form 10BD Electronic Filing Report'}
           </h1>
-          <p className="text-xs text-[#727B74] mt-0.5">
+          <p className="font-body-sm text-body-sm text-on-surface-variant">
             Compiled statement of donations for electronic submission to the Income Tax Department under Rule 18AB.
           </p>
         </div>
@@ -64,7 +52,7 @@ export const AdminReportsPage: React.FC = () => {
           <select
             value={financialYear}
             onChange={(e) => setFinancialYear(e.target.value)}
-            className="px-3 py-2 text-xs border border-[#E5E4DE] rounded-btn bg-white font-semibold"
+            className="px-3.5 py-2 text-sm bg-surface-container-low border border-[#E8EAE5] rounded-xl font-label-md font-semibold text-on-surface cursor-pointer focus:outline-hidden"
           >
             <option value="2026-27">FY 2026-27 (Current)</option>
             <option value="2025-26">FY 2025-26</option>
@@ -73,95 +61,97 @@ export const AdminReportsPage: React.FC = () => {
           <button
             type="button"
             onClick={handleExportCsv}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#174C3C] hover:bg-[#103A30] text-white text-xs font-bold rounded-btn transition-colors shadow-soft"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-container text-on-primary font-label-md text-sm font-semibold rounded-xl transition-all shadow-sm cursor-pointer"
           >
-            <FileSpreadsheet className="w-4 h-4" />
+            <span className="material-symbols-outlined text-[18px]">file_download</span>
             <span>Export Form 10BD (CSV)</span>
           </button>
         </div>
       </div>
 
       {/* Summary Banner */}
-      <div className="bg-white rounded-card border border-[#E5E4DE] p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-surface-container-lowest rounded-2xl border border-[#E8EAE5] p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-[#174C3C]/10 text-[#174C3C] flex items-center justify-center font-bold">
-            <ShieldCheck className="w-6 h-6" />
+          <div className="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary font-bold">
+            <span className="material-symbols-outlined text-[24px]">verified_user</span>
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[#202923]">Form 10BD Annual Donor Statement</h3>
-            <p className="text-xs text-[#727B74]">
+            <h3 className="font-title-md text-title-md font-bold text-primary">Form 10BD Annual Donor Statement</h3>
+            <p className="font-body-sm text-xs text-on-surface-variant">
               Trust 80G Reg: CIT(E)/BPL/80G/2021-22/A-1089 • Trust PAN: AAATC1234D
             </p>
           </div>
         </div>
 
-        <div className="flex gap-6 sm:text-right">
+        <div className="flex gap-8 sm:text-right">
           <div>
-            <span className="text-[10px] text-[#727B74] font-semibold uppercase block">Total Filings</span>
-            <span className="text-xl font-bold text-[#202923]">{form10bdRecords.length} Donors</span>
+            <span className="font-label-caps text-label-caps text-on-surface-variant font-semibold uppercase block">
+              Total Verified Donors
+            </span>
+            <span className="font-headline-sm text-headline-sm font-bold text-primary">{form10bdRecords.length}</span>
           </div>
           <div>
-            <span className="text-[10px] text-[#727B74] font-semibold uppercase block">Aggregate Value</span>
-            <span className="text-xl font-bold text-[#174C3C]">₹{totalAmount.toLocaleString('en-IN')}</span>
+            <span className="font-label-caps text-label-caps text-on-surface-variant font-semibold uppercase block">
+              Statement Aggregate Value
+            </span>
+            <span className="font-headline-sm text-headline-sm font-bold text-secondary">
+              ₹{totalAmount.toLocaleString('en-IN')}
+            </span>
           </div>
         </div>
       </div>
 
       {/* Form 10BD Table */}
-      <div className="bg-white rounded-card border border-[#E5E4DE] shadow-xs overflow-hidden">
-        <div className="p-4 bg-[#FAF9F5] border-b border-[#E5E4DE] flex items-center justify-between">
-          <span className="text-xs font-bold text-[#103A30]">
-            Electronic Form 10BD Data Grid (Indian Income Tax Format)
+      <div className="bg-surface-container-lowest rounded-2xl shadow-sm border border-[#E8EAE5] overflow-hidden">
+        <div className="p-6 border-b border-[#E8EAE5] flex items-center justify-between">
+          <h3 className="font-title-md text-title-md text-primary font-bold">
+            Schedule of Donors (Form 10BD Electronic Specification)
+          </h3>
+          <span className="font-label-sm text-label-sm text-on-surface-variant">
+            {form10bdRecords.length} records ready for filing
           </span>
-          <span className="text-[10px] text-[#727B74]">Includes verified PAN & address records</span>
         </div>
 
         {isLoading ? (
-          <div className="p-6">
-            <TableSkeleton rows={5} />
-          </div>
+          <div className="p-12 text-center text-on-surface-variant">Compiling Form 10BD statement...</div>
         ) : form10bdRecords.length === 0 ? (
-          <div className="p-12 text-center text-xs text-[#727B74]">
-            No records for financial year {financialYear}.
+          <div className="p-12 text-center space-y-2">
+            <span className="material-symbols-outlined text-4xl text-outline">table_chart</span>
+            <h4 className="font-title-md text-primary font-bold">No Records for Selected Financial Year</h4>
+            <p className="font-body-sm text-on-surface-variant">No successful donations recorded for FY {financialYear}.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+            <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-white border-b border-[#E5E4DE] text-[10px] font-bold text-[#727B74] uppercase">
-                  <th className="py-3 px-3">S.No</th>
-                  <th className="py-3 px-3">Receipt / Ack No</th>
-                  <th className="py-3 px-3">Donor Legal Name</th>
-                  <th className="py-3 px-3">Donor PAN</th>
-                  <th className="py-3 px-3">Postal Address</th>
-                  <th className="py-3 px-3">Amount (INR)</th>
-                  <th className="py-3 px-3">Mode</th>
-                  <th className="py-3 px-3">Date</th>
+                <tr className="bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps uppercase tracking-wider border-b border-[#E8EAE5]">
+                  <th className="py-3 px-6 font-semibold">Sl. No.</th>
+                  <th className="py-3 px-6 font-semibold">Unique ID (PAN)</th>
+                  <th className="py-3 px-6 font-semibold">Donor Name</th>
+                  <th className="py-3 px-6 font-semibold">Address</th>
+                  <th className="py-3 px-6 font-semibold">Donation Type</th>
+                  <th className="py-3 px-6 font-semibold">Amount (INR)</th>
+                  <th className="py-3 px-6 font-semibold">Receipt Number</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#FAF9F5]">
-                {form10bdRecords.map((r) => (
-                  <tr key={r.serialNo} className="hover:bg-[#FAF9F5]/60 transition-colors">
-                    <td className="py-3 px-3 font-semibold text-[#727B74]">{r.serialNo}</td>
-                    <td className="py-3 px-3 font-mono font-bold text-[#174C3C]">
-                      {r.acknowledgementNo}
+              <tbody className="divide-y divide-[#E8EAE5]">
+                {form10bdRecords.map((r, idx) => (
+                  <tr key={idx} className="hover:bg-surface-container-low/40 transition-colors">
+                    <td className="py-3 px-6 font-mono text-xs text-on-surface-variant">{idx + 1}</td>
+                    <td className="py-3 px-6 font-mono text-xs font-bold text-primary">{r.uniqueIdNumber}</td>
+                    <td className="py-3 px-6 font-label-md text-sm font-semibold text-on-surface">{r.donorName}</td>
+                    <td className="py-3 px-6 font-body-sm text-xs text-on-surface-variant max-w-[200px] truncate">
+                      {r.address}
                     </td>
-                    <td className="py-3 px-3 font-bold text-[#202923]">{r.donorName}</td>
-                    <td className="py-3 px-3 font-mono text-[#202923]">{r.donorPAN}</td>
-                    <td className="py-3 px-3 text-[#727B74] max-w-[220px] truncate" title={r.donorAddress}>
-                      {r.donorAddress}
+                    <td className="py-3 px-6 font-label-sm text-xs text-on-surface-variant">
+                      <span className="px-2 py-0.5 rounded-md bg-surface-container font-semibold">
+                        {r.typeOfDonation}
+                      </span>
                     </td>
-                    <td className="py-3 px-3 font-bold text-[#174C3C]">
-                      ₹{r.donationAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    <td className="py-3 px-6 font-title-md text-sm font-bold text-primary">
+                      ₹{Number(r.donationAmount).toLocaleString('en-IN')}
                     </td>
-                    <td className="py-3 px-3 text-[#727B74]">{r.modeOfDonation}</td>
-                    <td className="py-3 px-3 text-[#727B74]">
-                      {new Date(r.dateOfDonation).toLocaleDateString('en-IN', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </td>
+                    <td className="py-3 px-6 font-mono text-xs font-semibold text-secondary">{r.receiptNumber}</td>
                   </tr>
                 ))}
               </tbody>

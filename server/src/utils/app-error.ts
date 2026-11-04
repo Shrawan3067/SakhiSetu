@@ -35,3 +35,4 @@ export class AppError extends Error {
     return new AppError(message, 409, code);
   }
 }
+

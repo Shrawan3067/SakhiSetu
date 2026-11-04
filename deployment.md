@@ -195,3 +195,4 @@ Use these documented accounts to demonstrate all role-based journeys:
 
 ### Issue: OpenAI API Rate Limit or Missing Key
 - The backend features a built-in safe synthesis fallback that produces structured plain-Hindi drafts without throwing unhandled exceptions.
+

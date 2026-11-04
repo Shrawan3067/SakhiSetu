@@ -124,3 +124,4 @@ describe('Critical Concurrency & Integrity Tests (Real PostgreSQL)', () => {
     expect(receipt).toBeNull();
   });
 });
+

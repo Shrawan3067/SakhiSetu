@@ -37,3 +37,4 @@ export class ReceiptSequenceService {
 }
 
 export const receiptSequenceService = new ReceiptSequenceService();
+

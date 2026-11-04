@@ -28,3 +28,4 @@ export const updateCampaignSchema = z.object({
     status: z.enum(['ACTIVE', 'COMPLETED', 'PAUSED', 'ARCHIVED']).optional(),
   }),
 });
+

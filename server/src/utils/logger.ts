@@ -53,3 +53,4 @@ export function maskPAN(pan: string): string {
   if (!pan || pan.length !== 10) return 'XXXXXXXXXX';
   return `${pan.substring(0, 2)}******${pan.substring(8)}`;
 }
+

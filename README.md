@@ -164,3 +164,4 @@ Use these documented accounts to test role-based access control (RBAC):
 ## ⚖️ Legal & Non-Profit Notice
 - **Statutory 80G Exemption**: Donations to SakhiSetu are eligible for 50% deduction under Section 80G(5)(vi) of the Income Tax Act, 1961. Receipts generated are demonstration documents for code evaluation and interview take-home assignment review.
 - **FCRA Compliance**: Foreign currency contributions and non-Indian credit cards are strictly blocked under Phase 1 restrictions.
+
